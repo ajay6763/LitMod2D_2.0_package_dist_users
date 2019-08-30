@@ -1,0 +1,41 @@
+#!/bin/bash
+###################3
+####### Profiles locations
+segments=3
+A="-4.0/31.0"
+B="-5.5/33.7"
+C="-5.5/37.8"
+D="-4.75/39.2"
+
+
+slat=`echo $A | awk -F"/" '{print $2}'`
+slong=`echo $A | awk -F"/" '{print $1}'`
+elat=`echo $B | awk -F"/" '{print $2}'`
+elong=`echo $B | awk -F"/" '{print $1}'`
+topo=$grd_files/mediterranean.grd
+# Plotting the topography in the profile
+
+# getting the totoal length of the profile from topo.xz file
+
+for file in *.1.grd  #*.1.grd
+do
+period=`echo $file| awk -F. '{print $1}'`
+
+project $file -C$A -E$B -G5 -Q > t1.xy 
+len=`tail -2  t1.xy| head  -n1| awk  '{print $3}'`
+project $file -C$B -E$C -G5 -Q > t2_.xy 
+cat t2_.xy| awk -v var="$len" '{print $1,$2,$3+var}' > t2.xy
+len=`tail -2  t2.xy| head  -n1| awk  '{print $3}'`
+project $file -C$C -E$D -G5 -Q > t3_.xy 
+cat t3_.xy| awk -v var="$len" '{print $1,$2,$3+var}' > t3.xy
+
+grdtrack t1.xy -G$file | awk '{print $3,$4}' >t1
+
+grdtrack t2.xy -G$file | awk '{print $3,$4}' >t2
+
+project $file -C$C -E$D -G5 -Q > temp.xy
+grdtrack t3.xy -G$file | awk '{print $3,$4}' >t3
+cat t1 t2 t3 > $period"s.dat"
+
+done
+rm -f topo.xy topo.xz nul.tmp structure.txt

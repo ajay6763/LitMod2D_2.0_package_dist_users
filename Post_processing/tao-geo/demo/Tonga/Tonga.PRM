@@ -1,0 +1,70 @@
+***  tao PARAMETERS FILE  ***
+    (default units : I.S.)
+
+#tao version of this parameter file
+version		tAo_2009-12-07
+
+
+#Model domain (if not present will take xmin,xmax):
+x0		000e3	Left
+xf		300e3	Right
+
+#Limits of the output window:
+xmin		000e3	Left
+xmax		300e3	Right
+zmin		-10000	Bottom
+zmax		-4000	Top
+
+#Gridding:
+Nx		401 	Number of x cells (distance axis).
+Nz		101	Number of z cells (depth axis for elastic-plastic model).
+
+zini 		-5800	Altitude of the initial plate position from sea level.
+
+#Densities:
+densasthen	3300	Density beneath the lithospheric plate, at the compensation level in the asthenosphere
+densmantle	3300	Density of the mantle (for gravity calculation purposes).
+densenv		1013	Environment density (air or water).
+
+#Time variables [My] (time goes from negative to positive: Timeini<Timefinal):
+Timeini		0	Initial time.
+Timefinal	1	Final time.
+dt		.5	Increment time.
+
+#Flexure:
+isost_model	3	To switch the thinplate model of lithosphere:
+			#0: No flexure performance.
+			#1: Pure elastic plate model.
+			#2: Visco-elastic plate model.
+			#3: Elastic-plastic oceanic lithosphere.
+			#4: Elastic-plastic continental always decoupled.
+			#5: Elastic-plastic continental never decoupled.
+			#6: Elastic-plastic continental auto. decoupling.
+Te		17000	Default Elastic Thickness (if no .EET file). Te=0 => local isostasy.
+tau		1	Relaxation time in Myr (used only for the viscoelastic plate model: isost_model=2). tau=viscosity*(2*(1+nu))/E. 1 Myr implies a lithospheric viscosity of 1e24 Pa s.
+boundary_conds	1	Boundary conditions for flexure
+			#0: Left edge is the center of a simmetric model and the plate is not broken there. Right edge is free.
+			#1: Broken plate at left with external force 'appshearforce' and moment 'appmoment' at the left edge. Right edge is free (zero values).
+			#2: 0 dip and 0 deflection at left and right edges.
+			#3: Free edges (0 moment and 0 vertical shear stress).
+			#4: Hunging plate with fixed edges and 0 moment.
+			#5: Broken plate at right with external force 'appshearforce' and moment 'appmoment' at the right edge. Left edge is free (zero values).
+horz_force	-6.000e+12	Horizontal tectonic force (compressive if >0).
+vert_force	-8.084e+12	Applied force as bound. cond. in cases 1 and 5. (downwards if <0).
+moment		-8.170e+16	Torque as bound. cond. cases 1 and 5. (clockwise if >0).
+
+
+#Surface water drainage:
+hydro_model	0	Defines the hydrological (drainage) model. 
+erosed_model	0	Defines the erosion/sedimentation model:
+
+
+#These are switches to turn on options of the model. Values are 1 (yes) or 0 (no):
+switch_sea	0	To account for the effect of sea in terms of load, gravity anomaly and sedimentation.
+switch_topoest	0	To keep loads at its initial position, filling the deflection with densinfill material.	
+grav_anom	0	Gravity anomaly output type. #0: No gravity calculations; #1: Bouguer anomaly;  #2:Free-Air
+
+#I/O:
+switch_files	1	For extra file output.
+switch_ps	1	For postscript output.
+

@@ -1,0 +1,39 @@
+#!/bin/csh
+#Syntax:  taofit.job projectname
+
+set moment = -10e+16
+set shear  = -10e+12
+set dm = 8e16
+set ds = 8e12
+set tecforces = (0e12 -2e12 4e12 -4e12 -6e12 -8e12 -10e12 -12e12)
+
+pwd
+date 
+
+pwd					>  $1.taofit.job.mse
+echo Output produced with command: $0 $1>> $1.taofit.job.mse
+echo Parameters: moment/dm: $moment/$dm   shear/ds: $shear/$ds >> $1.taofit.job.mse
+date 					>> $1.taofit.job.mse
+echo					>> $1.taofit.job.mse
+echo "PARAMETERS of $1 tao project FOR THIS RUN OF taofit.job: *********************" >> $1.taofit.job.mse
+cat $1.PRM 				>> $1.taofit.job.mse
+
+echo "RESULTS: *********************************************************************" >> $1.taofit.job.mse
+foreach P ($tecforces)
+	echo Calculating inversion for tecforce=$P N/m...
+	echo   	>> $1.taofit.job.mse
+	echo taofit $1 -m$moment -s$shear -M$dm -S$ds -p$P  	>> $1.taofit.job.mse
+	     taofit $1 -m$moment -s$shear -M$dm -S$ds -p$P  	>> $1.taofit.job.mse
+end
+
+date 		>> $1.taofit.job.mse
+date
+
+grep Min_Err $1.taofit.job.mse > taofit.job.abstract.tmp
+echo " "				>> $1.taofit.job.mse
+echo " "				>> $1.taofit.job.mse
+echo "ABSTRACT OF BEST RESULTS: ****************************************************" >> $1.taofit.job.mse
+cat taofit.job.abstract.tmp		>> $1.taofit.job.mse
+cat taofit.job.abstract.tmp
+
+rm -f taofit.job.*.tmp

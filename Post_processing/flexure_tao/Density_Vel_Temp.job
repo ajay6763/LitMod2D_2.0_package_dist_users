@@ -1,0 +1,321 @@
+#!/bin/zsh
+
+##### 		This job creates 2 Plots, postcripts files   				#####
+#####  It also calculates the average crustal density along the profile		#####
+
+###  1. Densities along the profile + density and velocity in depth beneath 3 points. 
+###  2. Temperature along the profile + density, velocity and temperature beneath 3 points
+
+gmtset PAPER_MEDIA = A4
+
+filein=dens.dat
+fileBodies=bodies.out
+fileVLitMod=velocities.dat
+fileTemp=tempout.dat
+
+##  Density profiles in depth #### 
+xcoord1=170
+xcoord2=495
+xcoord3=800
+color1=200/0/0
+color2=0/0/200
+color3=0/120/0
+Temp_LAB=1320
+
+wc $filein | read numrow a b c
+awk '{if(NR==numrow) {print $1} }' numrow=$numrow $filein | read Xmax
+
+echo " Choose which plot do you want"
+echo " 		1 - Density profile + Vp"
+echo " 		2 - Temperature profile + Density + Vs + Vp"
+read PlotSelect
+
+#XYdim=0/$Xmax/0/400
+
+#Set profile extension and scales
+left=0			### horizontal inicial point (km)
+right=$Xmax		### horizontal last point (km)
+Dx=5			### horizontal discrititzation (km)
+Rcrust=$left/$right/-5/50
+width=X15.2
+Jgraf_crust=$width/-2
+XYRegion=$left/$right/-5/400
+#Jgraf=$width/-3.5
+
+##	For a profile 950 km long  =>	width=16.6 and	xscale=0.0175
+##					width=16   and	xscale=0.01688
+##					width=15.2 and	xscale=0.016
+xscale=0.016
+Jgraf=x$xscale/-$xscale
+
+rhomoho=3000	### Average crustal density, rho max = rhomoho
+
+if [ $PlotSelect -eq 1 ]		#############	DENSITY PLOT	########
+then
+				
+psfile=density_profile.ps
+rm $psfile
+awk '{if(NR>2) {print $1, -$2, $3}}' $filein | nearneighbor -R$XYRegion -I$Dx -Gfile_grd.tmp -S10 -N4 -F -V
+
+### Crustal Density
+#grd2cpt file_grd.tmp -Cjet -I -S2400/2900/50 -Z -V >  file_cpt.tmp
+#makecpt -Chaxby -D -I -T2300/3000/100 > file_cpt.tmp
+makecpt -Chaxby -I -T2300/$rhomoho/100 > file_cpt.tmp
+echo $rhomoho	200	200	200	3600	200	200	200  >> file_cpt.tmp
+psbasemap -P -R$Rcrust -J$Jgraf_crust -B100f50:"crustal density < $rhomoho kg/m@+3@+ ":/:"Depth (km)":a10f2WeS -Y24.5 -K -V > $psfile
+grdview file_grd.tmp -R -J$Jgraf_crust -Cfile_cpt.tmp -Qi -O -K -V >> $psfile
+#grdimage file_grd.tmp -R -J$Jgraf_crust -Cfile_cpt.tmp -O -K -V >> $psfile
+psscale -Cfile_cpt.tmp -D16.4/1.5/3.5/0.2 -B:"crustal Density (kg/m@+3@+)": -L -V -O -K >> $psfile
+#psscale -Cfile_cpt.tmp -D8/-0.6/17/0.2h -B:"crustal Density (kg/m@+3@+)": -L -V -O -K >> $psfile
+awk '{if($1==">") {print ">"} else {print $1,-$2 }}' $fileBodies > filebodies.tmp	## bodies
+psxy filebodies.tmp -R -J$Jgraf_crust -W1 -M -V -O -K >> $psfile
+psxy -R -J -W10/$color1 -M -V -O -K <<END>> $psfile
+$xcoord1 0
+$xcoord1 400
+END
+psxy -R -J -W10/$color2 -M -V -O -K <<END>> $psfile
+$xcoord2 0
+$xcoord2 400
+END
+psxy -R -J -W10/$color3 -M -V -O -K <<END>> $psfile
+$xcoord3 0
+$xcoord3 400
+END
+pstext -R -J -N -O -K -V <<END>> $psfile
+$xcoord1 -5  10 0 0 2 $xcoord1 km
+$xcoord2 -5  10 0 0 2 $xcoord2 km
+$xcoord3 -5  10 0 0 2 $xcoord3 km
+END
+
+###  Crustal average density
+rm file_rhoAverage.tmp
+awk '{if($2==-400) {print $0}}' $filein > file_bottom.tmp
+wc file_bottom.tmp | read nmax a b c
+echo nmax = $nmax
+nx=1
+x=$left
+Rho_mean=0
+while [ $nx -le $nmax ]
+do
+   x1=$(($x-$Dx/2))
+   x2=$(($x+$Dx/2))
+   awk '{if($1==x && $3<rhomoho) {print -$2, $3}}' x=$x rhomoho=$rhomoho $filein > file_col1.tmp
+   #awk '{if($1>=x1 && $1<=x2 && $3<rhomoho) {print -$2, $3}}' x1=$x1 x2=$x2 rhomoho=$rhomoho $filein > file_col1.tmp
+   awk '{if(NR>1) {print $0}}' file_col1.tmp > file_col2.tmp
+   wc file_col2.tmp | read npoints a b c
+   paste file_col1.tmp file_col2.tmp > file_z1_z2.tmp
+
+   Sum_Dz_rho=0
+   Sum_Dz=0
+   Dz_rho=0
+   np=1
+   while [ $np -le $npoints ]
+   do
+      awk '{if(NR==np) {print $3-$1, ($3-$1)*(($4+$2)/2)} }' np=$np file_z1_z2.tmp | read Dz Dz_rho
+      #echo Dz = $Dz     Dz_rho = $Dz_rho
+      Sum_Dz=$(($Sum_Dz+$Dz))
+      Sum_Dz_rho=$(($Sum_Dz_rho+$Dz_rho))
+      #echo $np $Sum_Dz $Sum_Dz_rho
+      np=$(($np+1))
+   done
+   #awk '{print Sum_Dz_rho/Sum_Dz }' Sum_Dz_rho=$Sum_Dz_rho  Sum_Dz=$Sum_Dz file_z1_z2.tmp | read Rho_average
+   Rho_average=$(($Sum_Dz_rho/$Sum_Dz))
+   echo x = $x ,  Rho_average = $Rho_average
+   echo  $x  $Rho_average >> file_rhoAverage.tmp
+   Rho_mean=$(($Rho_mean+$Rho_average))
+   nx=$(($nx+1))
+   x=$(($x+$Dx))
+done 
+#awk '{print Rho_mean/(nx-1) }' Rho_mean=$Rho_mean  nx=$nx file_z1_z2.tmp | read Rho_mean
+Rho_mean=$(($Rho_mean/($nx-1)))
+psbasemap -R$left/$right/2720/2880 -J$width/1.5 -B100f50:" Mean crustal density = $Rho_mean kg/m@+3@+":/:"(kg/m@+3@+)":a50f10WesN -Y2.4 -K -O -V >> $psfile
+psxy file_rhoAverage.tmp -R -J -B -W4,darkgrey -O -K -V >> $psfile
+psxy -R -J -W5,grey -M -V -O -K <<END>> $psfile
+$left	$Rho_mean
+$Xmax	$Rho_mean
+END
+
+
+###   Mantle Density
+#grd2cpt file_grd.tmp -Chaxby -I -S3200/3600/100 -Z -V >  file_cpt.tmp
+makecpt -Chaxby -I -D -T3225/3650/30 > file_cpt.tmp			## hot
+psbasemap -R$XYRegion -J$Jgraf -B100f50:"":/:"Depth (km)":a100f20WeS -Y-11.7 -K -O -V >> $psfile
+grdview file_grd.tmp -R -J$Jgraf -Cfile_cpt.tmp -Qi -O -K -V >> $psfile
+#grdimage file_grd.tmp -R -J$Jgraf -Cfile_cpt.tmp -O -K -V >> $psfile
+psscale -Cfile_cpt.tmp -D16.4/3.3/7/0.2 -B:"Mantle Density (kg/m@+3@+)": -V -O -K -N300 >> $psfile
+#psscale -Cfile_cpt.tmp -D8/-0.6/15/0.2h -B:"Mantle Density (kg/m@+3@+)": -L -V -O -K >> $psfile
+awk '{if($1==">") {print ">"} else {print $1,-$2 }}' $fileBodies > filebodies.tmp	## bodies
+psxy filebodies.tmp -R -J$Jgraf -W1 -M -V -O -K >> $psfile
+psxy -R -J -W10/$color1 -M -V -O -K <<END>> $psfile
+$xcoord1 0
+$xcoord1 400
+END
+psxy -R -J -W10/$color2 -M -V -O -K <<END>> $psfile
+$xcoord2 0
+$xcoord2 400
+END
+psxy -R -J -W10/$color3 -M -V -O -K <<END>> $psfile
+$xcoord3 0
+$xcoord3 400
+END
+pstext -R -J -N -O -K -V <<END>> $psfile
+$xcoord1 -15  10 0 0 2 $xcoord1 km
+$xcoord2 -15  10 0 0 2 $xcoord2 km
+$xcoord3 -15  10 0 0 2 $xcoord3 km
+END
+
+########   Density profiles   ##########
+
+RXY=2200/3350/-4/60
+Jdens=X7.5c/-11c
+psbasemap -J$Jdens -R$RXY -Y-13.5 -B200f50g100:"Density (kg/m@+3@+)":/10f5g20:"Depth (km)":WNes -K -O -V >> $psfile
+awk '{if($1==xcoord1){print $3, -$2} }' xcoord1=$xcoord1 $filein | psxy -R -J -W4/$color1 -O -K -V >> $psfile
+awk '{if($1==xcoord2){print $3, -$2} }' xcoord2=$xcoord2 $filein | psxy -R -J -W4/$color2 -O -K -V >> $psfile
+awk '{if($1==xcoord3){print $3, -$2} }' xcoord3=$xcoord3 $filein | psxy -R -J -W4/$color3 -O -K -V >> $psfile
+
+Ydepth=-4/400
+RXY=2400/3700/$Ydepth
+psbasemap -J -R$RXY -X9.3 -B200f50g100:"Density (kg/m@+3@+)":/25f5g50:"Depth (km)":WNe -K -O -V >> $psfile
+awk '{if($1==xcoord1){print $3, -$2} }' xcoord1=$xcoord1 $filein | psxy -R -J -W4/$color1 -O -K -V >> $psfile
+awk '{if($1==xcoord2){print $3, -$2} }' xcoord2=$xcoord2 $filein | psxy -R -J -W4/$color2 -O -K -V >> $psfile
+awk '{if($1==xcoord3){print $3, -$2} }' xcoord3=$xcoord3 $filein | psxy -R -J -W4/$color3 -O -K -V >> $psfile
+
+########   Velocity profiles   ##########
+RXY=7.6/9/$Ydepth
+psbasemap -J -R$RXY -B0.2f0.1:"Vp (km/s)":/:"":S -K -O -V >> $psfile
+#awk '{if($1==xcoord1){print $3, -$2} }' xcoord1=$xcoord1 $fileVLitMod | psxy -R$RXY -J -B0.2f0.1:"Vp (km/s)":/:"":S -W4/$color1 -O -K -V >> $psfile	## Vp 
+awk '{if($1==xcoord1){print $3, -$2} }' xcoord1=$xcoord1 $fileVLitMod | psxy -R$RXY -J -W4/$color1 -O -K -V >> $psfile	## Vp 
+awk '{if($1==xcoord2){print $3, -$2} }' xcoord2=$xcoord2 $fileVLitMod | psxy -R$RXY -J -W4/$color2 -O -K -V >> $psfile	## Vp 
+awk '{if($1==xcoord3){print $3, -$2} }' xcoord3=$xcoord3 $fileVLitMod | psxy -R$RXY -J -W4/$color3 -O -V >> $psfile	## Vp 
+
+evince $psfile &
+fi
+#################   END Plot 1
+
+
+######## Plot 2:   TEMPERATURE AND VELOCITY PROFILES   ###########################
+			
+psfile2=Temperautre_velocity_profile.ps
+rm $psfile2
+
+###   Temperature 
+awk '{if(NR>2) {print $1, -$2, $3}}' $fileTemp | nearneighbor -R$XYRegion -I$Dx -Gfile_grd.tmp -S10 -N4 -F -V	## Temperature
+
+awk '{if($1==">") {print ">"} else {print $1,-$2 }}' $fileBodies > filebodies.tmp	## bodies
+
+#### Plot crustal Temperature
+Jgraf_crust=$width/-2.5
+makecpt -Chaxby -D -T0/700/100 > file_cpt.tmp
+psbasemap -R$Rcrust -J$Jgraf_crust -B100f50:"Distance (km)":/:"Depth (km)":a10f2WeS -Y26 -P -K -V > $psfile2
+grdview file_grd.tmp -R -J -Cfile_cpt.tmp -Qi -O -K -V >> $psfile2
+#grdimage file_grd.tmp -R -J -Cfile_cpt.tmp -O -K -V >> $psfile2
+grdcontour file_grd.tmp -R -C100 -A200 -W1/255/255/255 -J -O -K >> $psfile2
+#psscale -Cfile_cpt.tmp -D8/-1/14/0.2h -B:"Temperature (@+o@+C)": -L -V -O -K >> $psfile2
+psscale -Cfile_cpt.tmp -D16/1.4/4/0.2 -B:"Temperature (@+o@+C)": -L -V -O -K >> $psfile2
+psxy filebodies.tmp -R -J -W1 -M -V -O -K >> $psfile2
+
+
+#### Plot Temperature in all model
+makecpt -Cjet -D -T0/1600/100 > file_cpt.tmp
+psbasemap -R$XYRegion -J$Jgraf -B100f50:"Distance (km)":/:"Depth (km)":a100f20WeS -Y-8.5 -O -K -V >> $psfile2
+grdview file_grd.tmp -R -J$Jgraf -Cfile_cpt.tmp -Qi -O -K -V >> $psfile2
+#grdimage file_grd.tmp -R -J$Jgraf -Cfile_cpt.tmp -O -K -V >> $psfile2
+grdcontour file_grd.tmp -R -C100 -A200 -W1/255/255/255 -J -O -K >> $psfile2
+#psscale -Cfile_cpt.tmp -D8/-1/14/0.2h -B:"Temperature (@+o@+C)": -L -V -O -K >> $psfile2
+psscale -Cfile_cpt.tmp -D16/3/6/0.2 -B:"Temperature (@+o@+C)": -L -V -O -K >> $psfile2
+
+psxy filebodies.tmp -R -J$Jgraf -W1 -M -V -O -K >> $psfile2
+psxy -R -J -W10/$color1 -M -V -O -K <<END>> $psfile2
+$xcoord1 0
+$xcoord1 400
+END
+psxy -R -J -W10/$color2 -M -V -O -K <<END>> $psfile2
+$xcoord2 0
+$xcoord2 400
+END
+psxy -R -J -W10/$color3 -M -V -O -K <<END>> $psfile2
+$xcoord3 0
+$xcoord3 400
+END
+pstext -R -J -N -O -K -V <<END>> $psfile2
+$xcoord1 -15  10 0 0 2 $xcoord1 km
+$xcoord2 -15  10 0 0 2 $xcoord2 km
+$xcoord3 -15  10 0 0 2 $xcoord3 km
+END
+
+####  Find LAB positions at each column
+echo ">" > file_LAB.tmp
+awk '{if($1==xcoord1 && $3==Temp_LAB){print $3,-$2} }' xcoord1=$xcoord1 Temp_LAB=$Temp_LAB $fileTemp | read TLAB zdepth
+echo 0 $zdepth >> file_LAB.tmp
+echo $TLAB $zdepth >> file_LAB.tmp
+echo ">" >> file_LAB.tmp
+awk '{if($1==xcoord2 && $3==Temp_LAB){print $3, -$2} }' xcoord2=$xcoord2 Temp_LAB=$Temp_LAB $fileTemp | read TLAB zdepth
+echo 0 $zdepth >> file_LAB.tmp
+echo $TLAB $zdepth >> file_LAB.tmp
+echo ">" >> file_LAB.tmp
+awk '{if($1==xcoord3 && $3==Temp_LAB){print $3, -$2} }' xcoord3=$xcoord3 Temp_LAB=$Temp_LAB $fileTemp | read TLAB zdepth
+echo 0 $zdepth >> file_LAB.tmp
+echo $TLAB $zdepth >> file_LAB.tmp
+
+
+Ydepth=-4/400
+Jdens=X7.5c/-12c
+########   Density profiles   ##########
+RXY=2300/3650/$Ydepth
+psbasemap -J$Jdens -R$RXY -Y-15 -B200f50g100:"Density (kg/m@+3@+)":/25f5g50:"Depth (km)":WN -K -O -V >> $psfile2
+awk '{if($1==xcoord1){print $3, -$2} }' xcoord1=$xcoord1 $filein | psxy -R -J -W1/$color1 -O -K -V >> $psfile2
+awk '{if($1==xcoord2){print $3, -$2} }' xcoord2=$xcoord2 $filein | psxy -R -J -W1/$color2 -O -K -V >> $psfile2
+awk '{if($1==xcoord3){print $3, -$2} }' xcoord3=$xcoord3 $filein | psxy -R -J -W1/$color3 -O -K -V >> $psfile2
+
+########   Velocity profiles - Vs  ##########
+RXY=4.1/4.8/$Ydepth
+awk '{if($1==xcoord1 && $4>0){print $4, -$2} }' xcoord1=$xcoord1 $fileVLitMod | psxy -R$RXY -J -B0.2f0.1:"Vs (km/s)":/25f5g50:" ":e -W4/$color1 -K -O -V >> $psfile2   ## Vs 
+awk '{if($1==xcoord2 && $4>0){print $4, -$2} }' xcoord2=$xcoord2 $fileVLitMod | psxy -R$RXY -J -W4/$color2 -O -K -V >> $psfile2			## Vp 
+awk '{if($1==xcoord3 && $4>0){print $4, -$2} }' xcoord3=$xcoord3 $fileVLitMod | psxy -R$RXY -J -W4/$color3 -O -K -V >> $psfile2			## Vp 
+
+psxy file_LAB.tmp -R -J -W1,black -M -V -K -O >> $psfile2
+
+####   Vs from Palomeras et al (2017)
+filein_Vs=~/MAIN/Projectes-Varios/Carballo-3rdProfile/DATA/Previous_Models/Vs_Palomeras2017.xdat
+filein_LAB=~/MAIN/Projectes-Varios/Carballo-3rdProfile/DATA/Previous_Models/Topo_Moho_LAB_Palomeras2017.xdat
+xc1=165.688
+xc2=495.126	#439.897
+xc3=782.318
+awk '{if($1==xc1){print $3} }' xc1=$xc1 $filein_LAB | read zmoho	## Just plot the Vs below moho depth
+echo "moho " $zmoho
+awk '{if($1==xc1 && $2>zmoho){print $3, $2} }' xc1=$xc1 zmoho=$zmoho $filein_Vs | psxy -R$RXY -J -B0.1f0.05:"Vs (km/s), $xc1, $xc2,  $xc3 ":/25f5g50:" ":S -W4/$color1"ta" -K -O -V >> $psfile2   ## Vs 
+awk '{if($1==xc2){print $3} }' xc2=$xc2 $filein_LAB | read zmoho
+awk '{if($1==xc2 && $2>zmoho){print $3, $2} }' xc2=$xc2 zmoho=$zmoho $filein_Vs | psxy -R$RXY -J -W4/$color2"ta" -O -K -V >> $psfile2			## Vp 
+awk '{if($1==xc3){print $3} }' xc3=$xc3 $filein_LAB | read zmoho
+awk '{if($1==xc3 && $2>zmoho){print $3, $2} }' xc3=$xc3 zmoho=$zmoho $filein_Vs | psxy -R$RXY -J -W4/$color3"ta" -O -K -V >> $psfile2			## Vp 
+   #### Find LAB from the previous study (Palomeras)
+awk '{if($1==xc1){print 4.3, $4} }' xc1=$xc1 $filein_LAB > file_LAB_vs1.tmp
+awk '{if($1==xc2){print 4.5, $4} }' xc2=$xc2 $filein_LAB > file_LAB_vs2.tmp
+awk '{if($1==xc3){print 4.4, $4} }' xc3=$xc3 $filein_LAB > file_LAB_vs3.tmp
+psxy file_LAB_vs1.tmp -R -J -SB0.025 -G$color1 -M -V -K -O >> $psfile2
+psxy file_LAB_vs2.tmp -R -J -SB0.025 -G$color2 -M -V -K -O >> $psfile2
+psxy file_LAB_vs3.tmp -R -J -SB0.025 -G$color3 -M -V -K -O >> $psfile2
+
+########   Velocity profiles  - Vp  ##########
+RXY=7.6/9/$Ydepth
+awk '{if($1==xcoord1 && $3>0){print $3, -$2} }' xcoord1=$xcoord1 $fileVLitMod | psxy -R$RXY -X8 -J -B0.2f0.1:"Vp (km/s)":/25f5g50:"Depth (km)":ES -W4/$color1 -K -O -V >> $psfile2   ## Vp 
+awk '{if($1==xcoord2 && $3>0){print $3, -$2} }' xcoord2=$xcoord2 $fileVLitMod | psxy -R$RXY -J -W4/$color2 -O -K -V >> $psfile2			## Vp 
+awk '{if($1==xcoord3 && $3>0){print $3, -$2} }' xcoord3=$xcoord3 $fileVLitMod | psxy -R$RXY -J -W4/$color3 -O -K -V >> $psfile2			## Vp 
+
+########   Temperature profiles - geotherms   ##########
+RXY=0/1600/$Ydepth
+awk '{if($1==xcoord1){print $3, -$2} }' xcoord1=$xcoord1 $fileTemp | psxy -R$RXY -J -B300f50g200:"Temperature":/:"":Nw -W2/$color1 -O -K -V >> $psfile2   ## Temperature 
+awk '{if($1==xcoord2){print $3, -$2} }' xcoord2=$xcoord2 $fileTemp | psxy -R$RXY -J -W2/$color2 -O -K -V >> $psfile2			## Temperature 
+awk '{if($1==xcoord3){print $3, -$2} }' xcoord3=$xcoord3 $fileTemp | psxy -R$RXY -J -W2/$color3 -O -K -V >> $psfile2			## Temperature 
+
+psxy -R -J -W4,grey -M -V -K -O <<END>> $psfile2
+$Temp_LAB   0
+$Temp_LAB   400
+END
+psxy file_LAB.tmp -R -J -W1,black -M -V -O >> $psfile2
+
+
+#rm file*tmp
+evince $psfile2 &
+#ps2raster $psfile -Tj -E900 -V
+

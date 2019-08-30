@@ -1,0 +1,83 @@
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+!
+!                            Parameters (a, b, c, d, e) 
+!                              for each mineral phase 
+!                          and for different orientations
+!
+!	 Parameters of every mineral phase are calculated using T(ºC). P(GPa)
+!
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+!
+!    Parameters'names are defined in the following way:
+!    XX(X)_YYY(Y)_Z
+!    where:
+!    XXX= two or three characters which indicate the mineral phase
+!    YYY=three or four characters which indicates the axial orientation or the type of mineral
+!    Z=one character which stands for the coefficient (a, b, c, d, e)
+!
+!    ol=olivine; spi=spinel; di=diopside; aug=augite; gt=granate; an=anorthite; alb=albite
+!    OE90=OrthoEnstatite-Mg90; OE89=OrthoEnstatite-Mg89
+!
+!    Olivine (Fo90): 3 orientations [010][001][100]
+!    Spinel: 2 samples (one pink(pk), one synthetic(syn)
+!    Diopside: 3 orientations [100][110][001]
+!    Augite: 2 orientations [010][001]
+!    Garnet: 2 compositions: Py/Al/Sp/Gr (43/52/1/4) and (35/43.5/1.7/19.8)
+!    Anorthite: 1 sample
+!    Albite: 3 orientations [010][001][_|_]
+!    Orthoenstatite: 3 orientations [001][010][100] and 2 compositions (Mg90, Mg89)
+!
+!
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+!
+     	Parameter (ol_010_a=0.45D0,ol_010_b=1.11D0,ol_010_c=235.D0,
+     *      ol_010_d=0.24D0,ol_010_e=40.D0,ol_001_a=0.7D0,
+     *      ol_001_b=1.65D0,ol_001_c=286.D0,ol_001_d=0.44D0,
+     *      ol_001_e=65.D0,ol_100_a=0.85D0,ol_100_b=1.93D0,
+     *      ol_100_c=258.D0,ol_100_d=0.84D0,ol_100_e=50.D0,
+     *
+     *      spi_pk_a=0.85D0,spi_pk_b=2.775D0,spi_pk_c=490.D0,
+     *      spi_pk_d=2.15D0,spi_pk_e=93.D0,spi_syn_a=0.915D0,
+     *      spi_syn_b=4.485D0,spi_syn_c=415.D0,
+     *      spi_syn_d=2.95D0,spi_syn_e=102.D0,
+     *
+     *      di_100_a=0.45D0,di_100_b=1.4D0,di_100_c=400.D0,
+     *      di_100_d=0.9D0,di_100_e=90.D0,di_110_a=0.5D0,
+     *      di_110_b=1.1D0,di_110_c=400.D0,di_110_d=1.04D0,
+     *      di_110_e=110.D0,di_001_a=0.8D0,di_001_b=1.4D0,
+     *      di_001_c=500.D0,di_001_d=2.D0,di_001_e=150.D0,
+     *
+     *      aug_010_a=0.5D0,aug_010_b=1.0D0,aug_010_c=400.D0,
+     *      aug_010_d=1.0D0,aug_010_e=116.D0,aug_001_a=0.82D0,
+     *      aug_001_b=1.1D0,aug_001_c=360.D0,aug_001_d=0.8D0,
+     *      aug_001_e=146.D0,
+     *
+     *      OE90_001_a=0.55D0,OE90_001_b=0.95D0,OE90_001_c=900.D0,
+     *      OE90_001_d=1.7D0,OE90_001_e=100.D0,OE90_010_a=0.385D0,
+     *      OE90_010_b=0.7D0,OE90_010_c=450.D0,OE90_010_d=0.85D0,
+     *      OE90_010_e=100.D0,OE90_100_a=0.45D0,OE90_100_b=0.72D0,
+     *      OE90_100_c=450.D0,OE90_100_d=0.9D0,OE90_100_e=80.D0,
+     *
+     *      OE89_001_a=0.55D0,OE89_001_b=0.95D0,OE89_001_c=900.D0,
+     *      OE89_001_d=1.9D0,OE89_001_e=100.D0,OE89_010_a=0.38D0,
+     *      OE89_010_b=0.7D0,OE89_010_c=450.D0,OE89_010_d=0.9D0,
+     *      OE89_010_e=105.D0,OE89_100_a=0.47D0,OE89_100_b=0.45D0,
+     *      OE89_100_c=550.D0,OE89_100_d=1.15D0,OE89_100_e=115.D0,
+     *
+     *      an_a=0.36D0,an_b=0.4D0,an_c=300.D0,an_d=0.0D0,an_e=50.D0,
+     *
+     *      alb_010_a=0.65D0,alb_010_b=0.8D0,alb_010_c=390.D0,
+     *      alb_010_d=0.4D0,alb_010_e=80.D0,alb_001_a=0.56D0,
+     *      alb_001_b=0.62D0,alb_001_c=350.D0,alb_001_d=0.3D0,
+     *      alb_001_e=120.D0,alb_p_a=0.425D0,alb_p_b=0.45D0,
+     *      alb_p_c=350.D0,alb_p_d=0.25D0,alb_p_e=60.D0,
+     *
+     *      gt_PyAl_a=0.6925D0,gt_PyAl_b=0.6325D0,gt_PyAl_c=245.D0,
+     *      gt_PyAl_d=0.23D0,gt_PyAl_e=60.D0,gt_AntH_a=0.6525D0,
+     *      gt_AntH_b=0.5725D0,gt_AntH_c=235.D0,gt_AntH_d=0.1D0,
+     *      gt_AntH_e=55,
+     *      pm_ol=0.1470024d0,pm_alb=0.262223d0,pm_di=0.2179086d0, 
+     *      pm_an=0.2470092d0,pm_gt=0.4551826d0,pm_aug=0.2202776d0,
+     *      pm_oe90=0.2070855d0,pm_spi=0.1424605d0)
+     

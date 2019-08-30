@@ -1,0 +1,329 @@
+
+1  => number of data bases present in file.                                                              
+P(bar)                    T(K)                      Y(CO2)                                                                
+ 6P(bar)                  
+ 4T(K)
+ 6Y(CO2)      
+                                                                                                     
+1D0 1D0 1D-7 1D-3 1D-3 -1D0 => tolerances on p,t,x,mu1,mu2 and DTOL
+                                                                    
+1  1.  300.  => data base index, reference pressure, reference temperature         
+Stix '05, Fab '99, Ogan '05, etc     => data base name
+                                                                                                
+  5   => number of data base components                                                                                                                             
+MGO   AL2O3 SIO2  CAO   FEO      => component names      
+                                                                                          
+40.32 101.94 60.09 56.08 71.85   => g-formula weights of the components     
+                                                     
+6 7 => indices of components that may be in the "saturated phase", do we need these?   
+
+This data base is a hybrid of: 
+
+Stixrude & Lithgow-Bertelloni '05 JGR data base is for high pressure phase relations
+and seismic velocities. The data base is for a specialized EoS, the non-zero parameters
+stored here are (in order):
+
+ f0  n -v0  k0 k0' td  gam0  q  etaS0 Sconf g0 g0'
+
+Fabrichnaya '99 Calphad data base for:
+
+fpv, wus, apv, coe, cor, faki, spf, hercf, spd, hercd, q (DUBIOUS!)
+
+refit to stixrude & bukowinski's equation of state, taking the q values assumed by 
+Stixrude & Lithgow-Bertelloni. k0, k0' gamma0 were computed from Fabrichnaya, td 
+was computed to give a match to Fabrichnaya's entropy at 20d4 bar 1600 K. Reference 
+state integration constants were computed as:
+
+DG(SiO2) = stv(stx) - stv(fab) = 
+DG(FeO)  = fs(stv) - stv(stv) - fs(fab) + stv(fab)
+DG(Al2O3) = py(stx) - en(stx) - py(fab) + en(fab)
+DG(MgO)  = en(stv) - stv(stv) - en(fab) + stv(fab)
+
+sio2 :=  876.40640d3;mgo  :=  607.12137d3;al2o3 := 1697.7127d3;feo :=   300.25346d3;
+
+for wuestite (wus) the free energy was adjusted to reproduce the experimental results of
+Irfune '94 at 28.5 GPa 1873 K.
+
+Ono, Oganov & Ohishi '05 EPSL data for ppv, appv and fppv refit to stixrude & bukowinski's 
+equation of state. td ppv adjusted to 873 K to match clapeyron slope (~80 bar/K).
+The reference state energy was chosen to give the pv->ppv transition at 2500 K and
+130 GPa. 
+
+Ca-Pv -> Elastic constants from Karki & Crain GRL 1998
+         Gamma0, etaS0 are those of Mg_perov
+         F0/theta0 adjusted to place the di = wad + stv + ca-pv
+         phase boundary at 18.15 GPa and 1873 K with a Clapeyron slope of 20.8 bar/K
+         after experimental phase relations of Akaogi et al PEPI 2004.
+
+JADC March 5, 2005. 
+
+NOTE that some of the endmembers have peculiar site populations and stoichiometries,
+this means that solution models should be checked for consistency with these choices.
+the solution models XXX(stx)/XXX(fab)/XXX(og) in solut_07.dat are consistent 
+with this data base.
+
+end
+ 
+an       1 1 0 0  Anorthite      CaAl2Si2O8             
+0. 1.  2.  1.  0.
+-235000.  13.  -10.079  8.4e5 
+4.  753.   0.46  1.   2.2 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+4e5 0.5 0. 0. 0. 0. 0. 0. 0.
+
+sp       1 1 0 0  Spinel         (Mg3Al1)(Al7Mg1)O16    
+4. 4.  0.  0.  0.
+-148000.  28.  -15.884  1.97e6 
+4.  869.   1.27  1.   2.5  43.76
+ 0. 0. 0. 0. 0. 0. 0. 0. 
+1.08e6 0.4 0. 0. 0. 0. 0. 0. 0.
+
+herc     1 1 0 0  Hercynite      (Fe3Al1)(Al7Fe1)O16    
+0. 4.  0.  0.  4. 
+-35000.  28.  -16.337  1.97e6 
+4.  721.   1.27  1.   2.5   
+97.28
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+8.5e5 0.4 0. 0. 0. 0. 0. 0. 0.
+
+
+fo       1 1 0 0  Forsterite     Mg2SiO4                
+2. 0.  1.  0.  0.
+-114100.   7.   -4.367  1.29e6 
+4.2  814.   1.14  1.9   2. 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+8.2e5 1.4 0. 0. 0. 0. 0. 0. 0.
+
+fa       1 1 0 0  Fayalite       Fe2SiO4                
+0. 0.  1.  0.  2. 
+-81100.   7.   -4.627  1.35e6 
+5.2  619.   1.08  1.9   1.1 
+0. 
+0. 0. 0. 0. 0. 0. 0. 0. 
+5.1e5 1.4 0. 0. 0. 0. 0. 0. 0.
+
+wad      1 1 0 0  Mg-Wadsleyite  Mg2SiO4                
+2. 0.  1.  0.  0. 
+-86500.   7.   -4.052  1.74e6 
+4.  858.   1.32  1.6   2.4 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.12e6 1.5 0. 0. 0. 0. 0. 0. 0.
+
+fwad     1 1 0 0  Fe-Wadsleyite  Fe2SiO4                
+0. 0.  1.  0.  2. 
+-71800.   7.   -4.322  1.74e6 
+4.  671.   1.32  1.6   2.4 
+0.
+0. 0. 0. 0. 0. 0. 0. 0. 
+7.2e5 1.5 0. 0. 0. 0. 0. 0. 0.
+
+ring     1 1 0 0  Mg-Ringwoodite Mg2SiO4                
+2. 0.  1.  0.  0. 
+-76900.   7.   -3.965  1.83e6 
+4.1  891.   1.21  2.   2.3 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.19e6 1.3 0. 0. 0. 0. 0. 0. 0.
+
+fring    1 1 0 0  Fe-Ringwoodite Fe2SiO4                
+0. 0.  1.  0.  2. 
+-72700.   7.   -4.202  1.92e6 
+4.1  671.   1.21  2.   2.3 
+0.
+0. 0. 0. 0. 0. 0. 0. 0. 
+1.05e6 1.3 0. 0. 0. 0. 0. 0. 0.
+
+en       1 1 0 0  Enstatite      Mg4Si4O12              
+4. 0.  4.  0.  0.
+-316000.  20.  -12.532  1.06e6 
+9.  818.   0.92  2.   2.1 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+7.7e5 1.5 0. 0. 0. 0. 0. 0. 0.
+
+fs       1 1 0 0  Ferrosilite    Fe4Si4O12              
+0. 0.  4.  0.  4.
+-257300.  20.  -13.184  1.01e6 
+9.  689.   0.98  2.   2.1 
+0.
+0. 0. 0. 0. 0. 0. 0. 0. 
+5.2e5 1.5 0. 0. 0. 0. 0. 0. 0.
+
+ts       1 1 0 0  Mg-Tschermaks (Mg2Al2)Si2Al2O12      
+2. 2.  2.  0.  0.
+-121600.  20.   -12.05  1.06e6 
+9.  818.   0.92  2.   2.1 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.06e6 1.5 0. 0. 0. 0. 0. 0. 0.
+
+c2/c     1 1 0 0  Mg-C2/c        Mg4Si4O12              
+4. 0.  4.  0.  0.
+-297600.  20.  -12.172  1.16e6 
+4.5  836   0.92  1.6   2.1 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+8.6e5 1.5 0. 0. 0. 0. 0. 0. 0.
+
+fc2/c    1 1 0 0  Fe-C2/c        Fe4Si4O12              
+0. 0.  4.  0.  4.
+-251100.  20.  -12.788  1.1e6 
+5.  712.   0.98  1.6   2.1 
+0.
+0. 0. 0. 0. 0. 0. 0. 0. 
+6.8e5 1.5 0. 0. 0. 0. 0. 0. 0.
+
+di       1 1 0 0  Diopside       Ca2Mg2Si4O12           
+2. 0.  4.  2.  0.
+-516400.  20.  -13.222  1.14e6 
+4.5  785.   1.06  1.6   2.1 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+6.7e5 1.2 0. 0. 0. 0. 0. 0. 0.
+
+hed      1 1 0 0  Hedenbergite   Ca2Fe2Si4O12           
+0. 0.  4.  2.  2.
+-454900.  20.  -13.568  1.2e6 
+4.5  702.   0.95  1.6   2.1 
+0. 
+0. 0. 0. 0. 0. 0. 0. 0. 
+6.1e5 1.2 0. 0. 0. 0. 0. 0. 0.
+
+mdi      1 1 0 0  Mg-Diopside    Mg2Mg2Si4O12           
+4. 0.  4.  0.  0.
+-305700.  20.  -12.532  1.14e6 
+4.5  814.   1.06  1.6   2.1 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+7.8e5 1.2 0. 0. 0. 0. 0. 0. 0.
+
+py       1 1 0 0  Pyrop-e         Mg3Al1Al1Si3O12        
+3. 1.  3.  0.  0.
+-234100.  20.  -11.319  1.7e6 
+4.  828.   1.24  0.3   0.8 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+9.3e5 1.4 0. 0. 0. 0. 0. 0. 0.
+
+alm      1 1 0 0  Almandine      Fe3Al1Al1Si3O12        
+0. 1.  3.  0.  3.
+-195000.  20.  -11.523  1.77e6 
+4.  740.   1.04  0.3   0.8 
+0.
+0. 0. 0. 0. 0. 0. 0. 0. 
+9.7e5 1.4 0. 0. 0. 0. 0. 0. 0.
+
+gr       1 1 0 0  Grossular      Ca3Al1Al1Si3O12        
+0. 1.  3.  3.  0.
+-461000.  20.   -12.53  1.68e6 
+4.5  817.   1.05  0.3   2.5 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.09e6 1.1 0. 0. 0. 0. 0. 0. 0.
+
+maj      1 1 0 0  Majorite       Mg3Mg1Si1Si3O12        
+4. 0.  4.  0.  0.
+-204100.  20.  -11.457  1.6e6 
+4.5  828.   1.24  0.3   0.8 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+8.7e5 1.4 0. 0. 0. 0. 0. 0. 0.
+
+aki      1 1 0 0  Mg-Akimotoite  MgSiO3      (ilmenite structure)          
+1. 0.  1.  0.  0. 
+-28200.   5.   -2.635  2.12e6 
+4.3  901.   1.48  1.7   2.9 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.32e6 1.6 0. 0. 0. 0. 0. 0. 0.
+
+faki     1 1 0 0  Fe-Akimotoite  FeSiO3     fabrichnaya            
+0. 0.  1.  0.  1. 
+5.35d3   5.   -2.7601  1999383. 
+4.  659.   1.5964  1.7   2.9 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.32e6 1.6 0. 0. 0. 0. 0. 0. 0.
+
+   f0  n -v0  k0 k0' td  gam0  q  etaS0 g0 g0'
+
+
+ppv      1 1 0 0  Mg-post-Perovskite  MgSiO3, shear mod cst by 0.17 GPa              
+1. 0.  1.  0.  0.  
+66.6d3  5.   -2.40269  2500850.
+4.04  890.75  1.5607  .9213   4. 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.94e6 1.7 0. 0. 0. 0. 0. 0. 0.
+
+appv     1 1 0 0  Al-post-Perovskite this is ppv with DH           
+0. 1.  0.  0.  0.  
+157.2d3   5.   -2.40269  2500850.
+4.04  890.75   1.5607  .9213   4. 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.94e6 1.7 0. 0. 0. 0. 0. 0. 0.
+
+fppv     1 1 0 0  Fe-post-Perovskite this is ppv with DH     was 152.4d3         
+0. 0.  1.  0.  1.  
+148.4d3   5.   -2.40269  2500850.
+4.04  890.75   1.5607  .9213   4. 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.94e6 1.7 0. 0. 0. 0. 0. 0. 0.
+
+perov    1 1 0 0  Mg-Perovskite  MgSiO3         13.9d3        
+1. 0.  1.  0.  0.  
+13900.   5.   -2.446  2.63e6 
+3.9  890.   1.50  1.   4. 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.77e6 1.7 0. 0. 0. 0. 0. 0. 0.
+ 
+aperov   1 1 0 0  Al-Perovskite  Al2O3                 
+0. 1.  0.  0.  0.  
+110.6d3   5.   -2.4  2625265.
+4.1  766.   1.8  1.   4. 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.77e6 1.7 0. 0. 0. 0. 0. 0. 0.
+
+cor      1 1 0 0  corundum  Al2O3       fabrichnaya          
+0. 1.  0.  0.  0.  
+6.6d3 5. -2.5576 2519048. 4.2 949. 1.2702  1.7   4. 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.77e6 1.7 0. 0. 0. 0. 0. 0. 0.
+
+fperov   1 1 0 0  Fe-Perovskite  FeSiO3     was 42            
+0. 0.  1.  0.  1.  
+38d3   5.   -2.559  2724800. 4.  682.   2.37  1.   4. 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.77e6 1.7 0. 0. 0. 0. 0. 0. 0.
+
+ca-pv    1 1 0 0  Ca-Perovskite  CaSiO3               
+0.  0.  1.  1.  0.  
+-68.1d3  5. -2.7304 2410000. 4.14  842. 1.5 1. 4. 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.64e6 1.9 0. 0. 0. 0. 0. 0. 0.
+
+per      1 1 0 0  Periclase      MgO                    
+1. 0.  0.  0.  0.      
+0.   2.   -1.125  1.6e6 
+4.1  771.   1.45  1.7   2.3 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.31e6 2.2 0. 0. 0. 0. 0. 0. 0.
+
+wus      1 1 0 0  Wuestite      FeO   fabrichnaya     20d3          
+0. 0.  0.  0.  1.      
+26d3   2.   -1.225  1782535. 
+4.  328.   1.57  1.7   2.3 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+1.31e6 2.2 0. 0. 0. 0. 0. 0. 0.
+
+stv      1 1 0 0  Stishovite     SiO2                   
+0. 0.  1.  0.  0.      
+0.   3.   -1.401  3.13e6 4.2  997   1.35  1.   2.2 
+0. 0. 0. 0. 0. 0. 0. 0. 0. 
+2.2e6 1.8 0. 0. 0. 0. 0. 0. 0.
+
+coe      1 1 0 0 H= -905490.   holland & powell, G modified to give coe/stv at 11GPa
+ 0. 0.  1.  0.  0.
+-38.729d3      40.8     2.064      96.5    -.577E-3 -444800.    
+ 0.    -798.2      0.     0.    0.18E-4  0.   
+ 0.     0.    -.18E-3  1044722.     -150.     4.   
+     0.62d6  1.5     -150. 0. 0. 0. 0. 0. 0. 0. vacher '98
+     0.59d6  1.40097 -24. 0. 0. 0. 0. 0. 0. 0. helffrich www1.gly.bris.ac.uk/~george/subcon/subcon.table2
+
+q        1 110 0 H= -910840.    holland & powell, G modified to give coe/stv at 11GPa
+ 0. 0.  1.  0.  0.   
+-44.2876d3      41.5     2.2688      110.7     -.5189E-2  0.   
+ 0.    -1128.3      0.     0.    0.65E-5  0.   
+ 0.     0.    -.65E-4  783541.9     -112.5      4.   
+ 847.     4.95    0.1188      0.     0.     0.   
+ 0.     0.     0.     0.   
+     0.43125d6  0.46 -14. 0. 0. 0. 0. 0. 0. 0.
+

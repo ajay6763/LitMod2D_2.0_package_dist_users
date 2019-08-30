@@ -1,0 +1,60 @@
+
+WARNING: The following solutions have compositions on an internal limit (i.e., 0<x<1)
+(see ranges below to determine which limits should be relaxed or
+if executing in auto_refine mode inrease auto_refine_slop in perplex_option.dat):
+
+     O(HP)     
+     Sp(HP)    
+     Wad(stx8) 
+     Gt(stx8)  
+     C2_c(jca) 
+
+Endmember compositional ranges for model: Pl(h)     
+
+     Endmember   Minimum   Maximum
+     abh         0.09657   0.79344
+
+Endmember compositional ranges for model: O(HP)     
+
+     Endmember   Minimum   Maximum
+     fo          0.89190   0.99174
+
+Endmember compositional ranges for model: Sp(HP)    
+
+     Endmember   Minimum   Maximum
+     sp          0.67818   0.80969
+
+Site fraction ranges for multisite model: Opx(HP)   
+
+  Site 1
+     Species   Minimum   Maximum   
+        1      0.89364   0.93972
+
+  Site 2
+     Species   Minimum   Maximum   
+        1      0.00000   0.14482
+
+Endmember compositional ranges for model: Cpx(HP)   
+
+     Endmember   Minimum   Maximum
+     cats        0.00001   0.25601
+     jd          0.00328   0.92466
+     hed         0.00023   0.06880
+
+Endmember compositional ranges for model: Wad(stx8) 
+
+     Endmember   Minimum   Maximum
+     wad         0.58442   0.90737
+
+Endmember compositional ranges for model: Gt(stx8)  
+
+     Endmember   Minimum   Maximum
+     gr          0.03787   0.56733
+     alm         0.09444   0.47827
+     maj         0.00568   0.73596
+     py          0.05302   0.72753
+
+Endmember compositional ranges for model: C2_c(jca) 
+
+     Endmember   Minimum   Maximum
+     c2/c        0.98228   1.00000

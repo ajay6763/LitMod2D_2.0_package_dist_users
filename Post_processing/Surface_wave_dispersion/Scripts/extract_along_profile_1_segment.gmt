@@ -1,0 +1,42 @@
+#!/bin/bash
+###################3
+####### Profiles locations
+segments=3
+
+####Ivone profile
+A="-4.0/31.0"
+B="-5.5/33.7"
+C="-5.5/37.8"
+D="-4.75/39.2"
+
+## Alboran profile
+A="-4.8/38.7" # "-4.0/39"   #"-4.3/38.9"
+B="-2/32.8" #"-2/32.8"   #"-1.7/32.9"
+
+## Algerean profile
+#A="1.0/41.8"
+#B="5.3/34.75"
+
+
+
+slat=`echo $A | awk -F"/" '{print $2}'`
+slong=`echo $A | awk -F"/" '{print $1}'`
+elat=`echo $B | awk -F"/" '{print $2}'`
+elong=`echo $B | awk -F"/" '{print $1}'`
+topo=$grd_files/mediterranean.grd
+disp_grd=/home/akumar/owncloud/PHD/Profiles/Alboran/Seismic_data_compilation/Dispersion_curves/maps
+# Plotting the topography in the profile
+
+# getting the totoal length of the profile from topo.xz file
+
+for file in $disp_grd/*.1.grd  #*.1.grd
+do
+period=`echo $file|awk -F/ '{print $(NF)}' | awk -F. '{print $1}'`
+
+project $file -C$A -E$B -G5 -Q > t1.xy 
+grdtrack t1.xy -G$file | awk '{print $3,$4}' >t1
+
+#len=`tail -2  t1.xy| head  -n1| awk  '{print $3}'`
+cat t1 > $period"s.dat"
+done
+rm -f topo.xy topo.xz nul.tmp structure.txt

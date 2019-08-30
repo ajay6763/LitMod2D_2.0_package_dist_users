@@ -1,0 +1,142 @@
+#!/bin/csh
+#Common stuff for gmt jobs of tao:
+
+set model = $prj
+set tmp 	= tao.gmt.$prj
+
+set Timenow = `awk '(NR==1) {printf("%.2f", $(NF-1)); exit;}' $prj.pfl`
+set Lx 		= `echo $3 \- $2 | bc -l`
+
+if ( $Lx != "" ) then
+	set xmin	= $2
+	set xmax	= $3
+	set zmin	= $4
+	set zmax	= $5
+else
+    if (-r $prj.pfl) then
+	awk '{\
+		if (NR==4) {numhrzs=NF-1; xmin=$1; sigx=sigy=0; zmin=0; zmax=0}\
+		if (NR>4) {\
+			if (zmax<$NF && $NF<15000) zmax=$NF;\
+			if (zmin>$2 && $2>-50000)  zmin=$2;\
+			xmax=$1; \
+			countx++;\
+		}\
+	}\
+	END {print numhrzs, countx, xmin, xmax, zmin, zmax}' $prj.pfl > $tmp.prop.tmp
+    else
+	echo ERROR: File $prj.pfl does not exist\!\!
+	exit
+    endif
+    set geom = `cat $tmp.prop.tmp`
+    set numpfls = $geom[1]
+    set xmin = `awk '{if ($1 == "xmin") {g=$2/1e3; exit}}END{print g}' g=$geom[3] $prj.PRM`
+    set xmax = `awk '{if ($1 == "xmax") {g=$2/1e3; exit}}END{print g}' g=$geom[4] $prj.PRM`
+    set zmin = `awk '{if ($1 == "zmin") {g=$2;     exit}}END{print g}' g=$geom[5] $prj.PRM`
+    set zmax = `awk '{if ($1 == "zmax") {g=$2;     exit}}END{print g}' g=$geom[6] $prj.PRM`
+endif
+
+set dt   	= `awk '{if ($1=="dt")        {print $2; exit;}}' $prj.PRM`
+set Timeini 	= `awk '{if ($1=="Timeini")   {print $2; exit;}}' $prj.PRM`
+set Timefinal 	= `awk '{if ($1=="Timefinal") {print $2; exit;}}' $prj.PRM`
+
+set switch_sea	= `awk '{if ($1 == "switch_sea")  {if (g=="") {g=1;exit}}}END{print g}' g=$6 $prj.PRM`
+set switch_rheo	= `awk '{if ($1 == "isost_model") {if ($2<3) g=0; else g=1; exit}}END{print g}' g=$7 $prj.PRM`
+set hydro_model	= `awk '{if ($1 == "hydro_model") {if (g=="") {g=1;exit}}}END{print g}' $prj.PRM`
+
+set numcols 	= `awk '(NR==4) {print NF; exit;}' $prj.pfl`
+set dens 	= `awk '(NR==2) {print $0; exit;}' $prj.pfl`
+set age 	= `awk '(NR==3) {print $0; exit;}' $prj.pfl`
+set sedim_age_limit = `echo \( $Timeini + $Timefinal \) / 2 | bc -l` 
+set dx  	= `awk '{if (NR==4) {a=$1;} if (NR==5) {print $1-a; exit;}}' $prj.pfl`
+set ps   	= $prj.ps
+set numpoints	= `awk 'END{print NR-1;}' $prj.pfl`
+if (-r $prj.xzt) then
+	set alt0	= `awk '{if (NR>=numpoints-1) {print -$(NF)/1000;exit;}}' numpoints=$numpoints $prj.xzt`
+endif
+set numhorizs 	= `echo $numcols - 1 | bc` 
+set zminkm 	= `echo $zmin / 1000 | bc -l` 
+set zmaxkm 	= `echo $zmax / 1000 | bc -l` 
+if (-r $prj.ysen) then
+	set mechthick = `awk '(NR>2 && $1>5 && $3<10) {print $1; exit;}' $prj.ysen`
+	echo mechthick=$mechthick km   
+endif
+set truescale 	= 1
+if ($truescale == 0) then 
+	set kopt = ""
+else 
+	set kopt = -K
+endif
+set region	= $xmin/$xmax/$zmin/$zmax
+set color_heavy_basement = 140/100/0
+set color_basement = 160/127/0
+set color_heavy_sediment = 80/130/255
+set color_oldest_sediment = 220/120/0
+set color_old_sediment = 255/180/0
+set color_sediment = 255/255/20
+set color_sea = 120/190/255
+set color_ice = 190/190/240
+
+echo
+echo -n PLOTTING... region = $region 
+
+#Intermidiate files:
+if (-r $prj.CRUST) then 
+	invertfile $prj.CRUST | \
+		awk '{if (substr($0, 1, 1)!=">" && substr($0, 1, 1)!="#") print $1/1000, -$2}' \
+		> $prj.basement.xz.tao.gmt.tmp
+else
+	echo  $xmax -1e6 | awk '{print $1+1e4,$2}' > $prj.basement.xz.tao.gmt.tmp
+	echo  $xmin -1e6 | awk '{print $1-1e4,$2}' >> $prj.basement.xz.tao.gmt.tmp
+endif
+awk   '{print $1, $2}' $prj.pfl >> $prj.basement.xz.tao.gmt.tmp
+awk   '{print $1, $2}' $prj.pfl > $prj.basement_line.xz.tao.gmt.tmp
+
+invertfile $prj.pfl > $prj.2.tao.gmt.tmp
+cat <<END> $prj.sea.tao.gmt.tmp
+	$xmax -10000
+	$xmin -10000
+	$xmin 0
+	$xmax 0
+END
+
+set yminkm = $zminkm
+set ymaxkm = $zmaxkm
+set ymin = $zmin
+set ymax = $zmax
+
+set ticklabels 	= `awk -v meanL=$Lx 'BEGIN{if (meanL>=990) print "a200f20"; else if (meanL>=390) print "a100f10"; else if (meanL>=90) print "a20f20"; else print "a10f1";}'`
+set zticklabels	= `awk -v zmin=$zminkm -v zmax=$zmaxkm 'BEGIN{if (zmax-zmin>=30) print "a10f5g10"; else if (zmax-zmin>=10) print "a4f1g4"; else if (zmax-zmin>=3) print "a1f.5g1"; else print "a.5f.1g.1";}'`
+
+if (-r $prj.strs) then
+cat <<END> $prj.stress_cpt.tao.gmt.tmp
+-600	250	0	0	-100	255	160	80
+-100	255	160	80	0	255	252	250
+0	250	252	255	100	80	160	255
+100	80	160	255	600	0	0	255
+F	0	0	0
+B	0	0	0
+END
+cat <<END>	$prj.contours1.z.tao.gmt.tmp
+	-1000
+	-300
+	-100	A
+	-30
+	-10	A
+#	-3
+	-1
+#	1
+#	3
+	10	A
+	30
+	100	A
+#	300
+	1000
+END
+	#stress clip file:
+	if (-r $prj.xzt) then
+		awk '{if (substr($0,1,1) != "#") print $1, $(NF-1)/1000+alt0}' alt0=$alt0 $prj.xzt > $prj.stress.clip.tao.gmt.tmp
+		awk '{if (substr($0,1,1) != "#") print $1, ($(NF-1))/1000+alt0+mechthick}' alt0=$alt0 mechthick=$mechthick $prj.xzt | invertfile >> $prj.stress.clip.tao.gmt.tmp
+	endif
+endif
+

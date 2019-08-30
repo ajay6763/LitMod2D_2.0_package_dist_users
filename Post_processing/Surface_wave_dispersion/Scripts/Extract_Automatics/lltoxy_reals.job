@@ -1,0 +1,67 @@
+#!/bin/zsh
+
+echo " ####################################################"
+echo " ##   TRANSFORM FILE WITH (lon, lat) DEGREES	###"
+echo " ## 		TO (x,y) METRES			###"
+echo " ####################################################"
+file_in0=filePosition_xytoll.tmp
+file_in=file_ll.tmp
+file_out=file_xy.tmp
+
+if [ -f $file_in0 ] 
+then
+   awk '{print $1,$2,$3,$4}' $file_in0 | read lon0 lat0 latmig a
+
+else
+   echo  1-Regular grid
+   echo  2-Real distance on the sphere
+   read a
+   echo "Entra l'origen de coordenades (en graus)"
+   echo " longitut?"
+   read lon0
+   echo " latitut?"
+   read lat0
+if [ $a -eq 1 ]
+then
+   echo " latitut mitja?"
+   read latmig
+   echo latitud mitja per a calcular la coordenada x: $latmig
+fi
+fi
+
+
+if [ -f $file_in ] 
+then
+   fpant=0
+   echo input file : $file_in
+   echo output file : $file_out
+else
+   fpant=1
+   echo " Point from which you want to find the x,y coordenates"
+   echo " longitud ?"
+   read lonP
+   echo " latitud ?"
+   read latP
+   echo $lonP $latP > $file_in
+fi
+
+echo Origen de les coordenades x,y: $lon0 E, $lat0 N 
+
+REarth=6371000
+if [ $a -eq 1 ]
+then
+   awk '{if($1!=">") {print 3.1416*REarth*(cos(latmig*3.1416/180))*($1-lon0)/180, 3.1416*REarth*($2-lat0)/180,$3,$4,$5,$6,$7,$8,$9,$10} \
+	else {print $1 } } ' \
+	lon0=$lon0 lat0=$lat0 latmig=$latmig REarth=$REarth $file_in > $file_out
+else
+   awk '{if($1!=">") {print 3.1416*REarth*(cos($2*3.1416/180))*($1-lon0)/180, 3.1416*REarth*($2-lat0)/180,$3,$4,$5,$6,$7,$8,$9,$10} \
+	else {print $1 } } ' \
+	lon0=$lon0 lat0=$lat0 REarth=$REarth $file_in > $file_out
+fi
+
+if [ $fpant -eq 1 ]
+then
+   echo   "lon   lat       x[m]     y[m]    Origin: ($lon0 E, $lat0 N) $latmig N"> file_pant_ll_xy.tmp
+   paste $file_in  $file_out >> file_pant_ll_xy.tmp
+   more  file_pant_ll_xy.tmp
+fi

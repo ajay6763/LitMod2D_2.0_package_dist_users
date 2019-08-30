@@ -1,0 +1,105 @@
+#!/bin/bash
+gmtset PAPER_MEDIA a3 BASEMAP_TYPE plain
+gmtset ANOT_FONT 5
+gmtset LABEL_FONT 5
+gmtset LABEL_FONT_SIZE 10p
+gmtset ANOT_FONT_SIZE 10p
+gmtset FRAME_PEN 0.1p
+gmtset GRID_PEN_PRIMARY 0.1p/grey
+echo "Enter profile length: "
+read profile_len
+
+echo "Enter resolution: "
+
+read reso
+obs_color=black
+obserr=0.1
+symbol_size=`echo " 0.00009*$profile_len" |bc` 
+#plot_l=`echo " -0.02*$length" |bc`   
+rm -f disp_all.inp disp_all.out
+proj="-JX12/2.5"
+bounds="-R0/$profile_len/2.3/5.0"
+#bounds="-R0/950/2.3/4.5" #full region
+miscB="-Ba100f25g100/a1f0.2g0.5WSen" # without grids on map
+out=disp_results.ps
+misc="-P"
+pen_color=black
+obs_color=red
+calc_color=blue
+err_color=black
+##################################################
+#### preparing for plotting
+##################################################
+for file  in *SURF96.out
+do
+i=`echo $file| awk -F_ '{print $1}'`
+dist=`echo " $reso*$i" |bc`   
+cat $i"_SURF96.inp"| awk -v var="$dist" '{print var, $6,$7}' >> disp_all.inp #|psxy  -J -R    -P   -W0.1  -Wred -V -K -O >>$ps
+cat $i"_SURF96.out"| awk -v var="$dist" '{print var, $6,$7}' >> disp_all.out #|psxy  -J -R    -P   -W0.1  -Wblack -V -K -O >>$ps
+done
+cat disp_all.inp | awk '{print $2,$1,$3}'| sort -V | awk '{print $2,$1,$3}' > sorted_input
+cat disp_all.out | awk '{print $2,$1,$3}'| sort -V | awk '{print $2,$1,$3}' > sorted_output
+
+##################################################
+#### plotting
+##################################################
+## figure periods
+awk '{print $2}' sorted_input | uniq > periods 
+psbasemap $proj $bounds $miscB -K -X2 -Y1.5  $misc >$out
+for i in  4.0000
+do
+grep -w $i  sorted_input > "$i"s_profile.input
+grep -w $i  sorted_output > "$i"s_profile.output
+awk -v err="$obserr" '{print $1,$3,err }'  "$i"s_profile.input|psxy  -J -R  -Ba100f50g50:"Distance (km)":/a1f0.5g0.5:"Rayleigh Phase(km/s)":/WSne:."": -Sc$symbol_size -Ey/$err_color  -W$obs_color  -O -K >> $out
+awk '{print $1,$3}'  "$i"s_profile.output|psxy  -J -R -Sc$symbol_size  -W$calc_color  -O -K >> $out
+pstext -R -J -D-0/0 -G0/0/0 -O  -K << stopit >> $out
+60 2.6 10 0 6 CM `echo $i s`
+stopit
+done
+
+for i in  6.0000 8.0000 10.0000 12.0000 14.0000 16.0000 18.0000 20.0000 25.0000 30.0000 35.0000
+do
+grep -w $i  sorted_input > "$i"s_profile.input
+grep -w $i  sorted_output > "$i"s_profile.output
+psbasemap $proj $bounds $miscB -K -Y3.4 -O >>$out
+awk -v err="$obserr" '{print $1,$3,err }'  "$i"s_profile.input|psxy  -J -R -Sc$symbol_size  -Ey/$err_color $miscB -W$obs_color -O -K >> $out
+awk '{print $1,$3}'  "$i"s_profile.output|psxy  -J -R -Sc$symbol_size  -W$calc_color -O -K >> $out
+pstext -R -J -D-0/0 -G0/0/0 -O  -K << stopit >> $out
+60 2.6 10 0 6 CM `echo $i s`
+stopit
+
+done
+
+
+miscB="-Ba100f25g100/a1f0.2g0.5wSen" # without grids on map
+for i in   40.0000
+do
+grep -w $i  sorted_input > "$i"s_profile.input
+grep -w $i  sorted_output > "$i"s_profile.output
+psbasemap $proj $bounds $miscB -K -X13 -Y-0.05 -O >>$out
+awk -v err="$obserr" '{print $1,$3,err }'  "$i"s_profile.input|psxy  -J -R -Sc$symbol_size -Ey/$err_color $miscB -W$obs_color -O -K >> $out
+awk '{print $1,$3}'  "$i"s_profile.output|psxy  -J -R -Sc$symbol_size  -W$calc_color -O -K >> $out
+pstext -R -J -D-0/0 -G0/0/0 -O  -K << stopit >> $out
+60 2.6 10 0 6 CM `echo $i s`
+stopit
+
+done
+
+
+for i in    45.0000 50.0000 59.0000 67.0000 77.0000 87.0000 100.0000 111.0000 125.0000 143.0000 167.0000
+
+do
+grep -w $i  sorted_input > "$i"s_profile.input
+grep -w $i  sorted_output > "$i"s_profile.output
+psbasemap $proj $bounds $miscB -K  -Y-3.4 -O >>$out
+awk -v err="$obserr" '{print $1,$3,err }'  "$i"s_profile.input|psxy  -J -R -Sc$symbol_size -Ey/$err_color $miscB -W$obs_color -O -K >> $out
+awk '{print $1,$3}'  "$i"s_profile.output|psxy  -J -R -Sc$symbol_size  -W$calc_color -O -K >> $out
+pstext -R -J -D-0/0 -G0/0/0 -O  -K << stopit >> $out
+60 2.6 10 0 6 CM `echo $i s`
+stopit
+
+done
+
+
+psxy -J -R -O < /dev/null >> $out
+gv $out

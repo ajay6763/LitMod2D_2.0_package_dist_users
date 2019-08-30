@@ -1,0 +1,80 @@
+#!/bin/bash
+gmtset PAPER_MEDIA a4 BASEMAP_TYPE plain
+gmtset ANOT_FONT 5
+gmtset LABEL_FONT 5
+gmtset LABEL_FONT_SIZE 10p
+gmtset ANOT_FONT_SIZE 10p
+gmtset FRAME_PEN 0.1p
+gmtset GRID_PEN_PRIMARY 0.1p/grey
+#echo "Enter profile length: "
+#read profile_len
+
+#echo "Enter resolution: "
+
+#read reso
+obs_color=black
+obserr=0.1
+symbol_size=0.1 
+#plot_l=`echo " -0.02*$length" |bc`   
+rm -f disp_all.inp disp_all.out
+proj="-JX28/20"
+bounds="-R0/180/2.5/4.5"
+#bounds="-R0/950/2.3/4.5" #full region
+miscB="-Ba20f10/a0.5f0.5WSen" # without grids on map
+out=disp_results.ps
+misc=""
+pen_color=black
+obs_color=red
+calc_color=blue
+err_color=black
+
+##################################################
+#### preparing for plotting
+##################################################
+for i in 0 
+do
+awk '{print $6,$7,0}'  "$i"_SURF96.inp|psxy  $proj $bounds  $miscB $misc -Sc$symbol_size -Ey/$err_color  -X1.5 -Y0.2 -W$obs_color  -V  -K > $out
+#awk '{print $6,$7}'  "$i"_SURF96.out|psxy  -J -R -Sc$symbol_size  -W$calc_color  -O -K -V >> $out
+dist=`echo " 10*$i" |bc` 
+pstext -R -J -D-0/0 -G0/0/0 -O  -K << stopit >> $out
+20 4.8 10 0 6 CM `echo $dist km`
+stopit
+done
+
+
+for i in  10 40   #10 15 20 25 30 35 40 45 50 55 60
+do
+awk '{print $6,$7,0}'  "$i"_SURF96.inp|psxy  $proj $bounds  $miscB -Sc$symbol_size -Ey/$err_color   -W$obs_color -O   -K -V >> $out
+#awk '{print $6,$7}'  "$i"_SURF96.out|psxy  -J -R -Sc$symbol_size  -W$calc_color  -O -K -V >> $out
+dist=`echo " 10*$i" |bc` 
+pstext -R -J -D-0/0 -G0/0/0 -O  -K << stopit >> $out
+20 4.8 10 0 6 CM `echo $dist km`
+stopit
+done
+comm<<!
+for i in  35
+do
+awk '{print $6,$7,$8}'  "$i"_SURF96.inp|psxy  $proj $bounds  $miscB -Sc$symbol_size -Ey/$err_color  -X10 -W$obs_color -O   -K -V >> $out
+awk '{print $6,$7}'  "$i"_SURF96.out|psxy  -J -R -Sc$symbol_size  -W$calc_color  -O -K -V >> $out
+dist=`echo " 10*$i" |bc` 
+pstext -R -J -D-0/0 -G0/0/0 -O  -K << stopit >> $out
+20 4.8 10 0 6 CM `echo $dist km`
+stopit
+done
+
+
+
+for i in   40 45 50 55 60
+do
+awk '{print $6,$7,$8}'  "$i"_SURF96.inp|psxy  $proj $bounds  $miscB -Sc$symbol_size -Ey/$err_color  -Y-5 -W$obs_color -O   -K -V >> $out
+awk '{print $6,$7}'  "$i"_SURF96.out|psxy  -J -R -Sc$symbol_size  -W$calc_color  -O -K -V >> $out
+dist=`echo " 10*$i" |bc` 
+pstext -R -J -D-0/0 -G0/0/0 -O  -K << stopit >> $out
+20 4.8 10 0 6 CM `echo $dist km`
+stopit
+done
+
+!
+
+psxy -J -R -O < /dev/null >> $out
+gv $out

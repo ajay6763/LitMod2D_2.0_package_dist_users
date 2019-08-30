@@ -1,0 +1,38 @@
+#!/bin/bash
+gmtset PAPER_MEDIA a3 BASEMAP_TYPE plain
+# setting GMT defaults
+gmtset ANOT_FONT 0
+gmtset LABEL_FONT 0
+gmtset LABEL_FONT_SIZE 12p
+gmtset ANOT_FONT_SIZE 10p
+gmtset FRAME_PEN 0.2p
+gmtset LABEL_OFFSET 0.05i
+gmtset TICK_LENGTH  0.05i
+gmtset GRID_PEN_PRIMARY 0.2p/grey
+echo "Enter profile length: "
+read length
+
+echo "Enter resolution: "
+read reso
+ps=RF_along_profile
+proj="-JX35/-15"
+bounds="-R0/$length/-2/40" #full region
+miscB="-Ba20f10/a10f5ESwn" # without grids on map
+#psbasemap $proj $bounds -B -W4 -Di -A250 -U -K >$ps
+
+psbasemap $proj $bounds -Ba100f50/a5f1WSen:"Time (s)":/:"Distance (km)":a50f10WenS -K -X2 -Y4 -V >$ps.ps
+#cat $dir/$data"_"$i.xyz|awk '{print $1,$2,$4}'|pswiggle  -R -J -Z200 -B -C0 -P -Gblack -T0.25p,blue  -W0.1,red  -V -K -O >>$ps # for bouguer
+for file in *.*.eqr
+do
+i=`echo $file| awk -F_ '{print $1}'`
+sac2xy	"$i"_vel.dat.eqr $i.xyz
+dist=$i  #`echo " $reso*$i" |bc`   
+cat $i.xyz| awk -v var="$dist" '{print   var,$1,$2}'|pswiggle  -R -J -Z0.5 -B -C0 -P -Gblack -T0.25p,grey  -W0.1,black  -V -K -O >>$ps.ps
+cat $i.xyz| awk -v var="$dist" '{print   var,$1,$2}'|pswiggle  -R -J -N -Z0.5 -B -C0 -P -Ggrey -T0.25p,grey  -W0.1,grey  -V -K -O >>$ps.ps
+done
+psxy ${proj} ${bounds} -O < /dev/null >> $ps.ps
+rm -f $ps.eps
+ps2eps $ps.ps
+evince $ps.eps;
+rm -f .gmtcommands4 .gmtdefaults4
+

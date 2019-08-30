@@ -1,0 +1,103 @@
+#!/bin/bash
+
+#echo "Enter Model Path:"
+
+
+if [ -d "./Phase_diagrams" ]; then
+  ### Take action if $DIR exists ###
+  echo "You have a Phase_diagram it will be overwritten"
+else
+  ###  Control will jump here if $DIR does NOT exists ###
+  mkdir ./Phase_diagrams
+fi
+
+
+cp post_processing_output.dat ./Phase_diagrams	
+#################################
+#reading material files code name
+
+echo "Enter material file codes separated by space (e.g., 90 98 99) "
+echo "Following are the full property material files in your model directory."
+
+ls ??_FULL
+echo " "
+echo " "
+read -a mat_list 
+
+######################################
+### looping through all material files
+### and looking up for stable phase and mineral assemblages in full property files
+for i in ${mat_list[@]} 
+do
+echo "Searching for your stable minerals in ......"
+echo $i
+cat post_processing_output.dat|awk -v a="$i" '{if ($8 == a)  print $0}'  > ./Phase_diagrams/$i"_profile"
+####
+## Findinf minimum and maximum T P
+P_min=`cat "./Phase_diagrams/"$i"_profile"|awk '{print $4}'|minmax -C |awk '{print $1}'`
+P_max=`cat "./Phase_diagrams/"$i"_profile"|awk '{print $4}'|minmax -C |awk '{print $2}'`
+T_min=`cat "./Phase_diagrams/"$i"_profile"|awk '{print $3}'|minmax -C |awk '{print $1}'`
+T_max=`cat "./Phase_diagrams/"$i"_profile"|awk '{print $3}'|minmax -C |awk '{print $2}'`
+
+#P_min=10000000
+#P_max=1000000000
+#T_min=1200
+#T_max=1300
+
+echo "Min P = " $P_min " Max P= " $P_max
+echo "Min T = " $T_min " Max T= " $T_max
+
+#grep 'O(HP)' "$i"_FULL|awk '{print $2-273,$3*100000,$32,$33}'|awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}' > O_"$i"_FULL.txt
+#grep 'O(HP)' "$i"_FULL|awk '{print $2-273,$3*100000,$32,$33}'|awk -v  Tmin="$T_min" -v Tmax="$T_max" -v Pmin="$P_min" -v Pmax="$P_max" '{if($1 >= Tmin && $1<= Tmax && $2 >= Pmin && $2<= Pmax) print $0}' > O_"$i"_FULL.txt
+
+#T P Vp Vs Vp/Vs density wt% vol%
+echo ""
+echo "Searching for your Plagioclase ......"
+grep 'Pl(h)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$32,$33,$34}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}'|awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1<= max) print $0}' > ./Phase_diagrams/Ph_"$i"_FULL.txt
+
+
+echo ""
+echo "Searching for your Spinel ......"
+grep 'Sp(HP)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$32,$33,$34}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}'|awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1<= max) print $0}' > ./Phase_diagrams/Sp_"$i"_FULL.txt
+
+
+
+echo ""
+echo "Searching for your Garnet ......"
+grep 'Gt(stx8)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$32,$33,$34}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}' |awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1 <= max) print $0}'> ./Phase_diagrams/Gt_"$i"_FULL.txt
+
+
+echo ""
+echo "Searching for your Orthopyroxene ......"
+grep 'Opx(HP)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$32,$33,$34}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}' |awk -v  min="$T_min" -v max="$T_max"  '{if($1 >= min && $1<= max) print $0}' > ./Phase_diagrams/Opx_"$i"_FULL.txt
+
+
+echo ""
+echo "Searching for your Clinopyroxene ......"
+grep 'Cpx(HP)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$32,$33,$34}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}' |awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1<= max) print $0}'> ./Phase_diagrams/Cpx_"$i"_FULL.txt
+
+echo ""
+echo "Searching for your Olivine ......"
+
+echo $i"_FULL"
+grep 'O(HP)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$32,$33,$34}'|awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}'|awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1<= max) print $0}'  > ./Phase_diagrams/Ol_"$i"_FULL.txt
+
+
+
+done
+
+echo " "
+echo " "
+
+echo "Your beautiful mantle minerals in Phase_diagram folder and are ready to be plotted :)" 
+echo "Use the provided python scripts in Phase_diagrams folder."
+echo " "
+echo " "
+echo "   phase_diagram_1D.py -- plots at a node along the profile "
+
+echo " "
+echo " "
+
+echo "   phase_diagram_2D.py -- plots along the profile "
+
+

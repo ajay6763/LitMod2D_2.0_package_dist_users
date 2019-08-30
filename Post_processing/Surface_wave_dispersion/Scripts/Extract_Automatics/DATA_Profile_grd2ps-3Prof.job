@@ -1,0 +1,159 @@
+#!/bin/zsh
+
+###### job modificat del DATA_grd2ps.job.  Three profiles  ############################
+
+
+##############  fa un mapa i dos talls de qualsevol fitxer grd ##############
+Input_Par_file=Input_DATA_grd2ps.dat
+DIR_file=$HOME/owncloud/PHD/Profiles/LitMod_data_profiles/grd_files #/home/akumar/ownCloud/PHD/Profiles/LitMod_data_profiles/grd_files 
+#/home/akumar/owncloud/PHD/Profiles/Alboran/Seismic_data_compilation/Dispersion_curves/maps
+#$HOME/ownCloud/PHD/Profiles/LitMod_data_profiles/grd_files #/home/akumar/ownCloud/PHD/Profiles/LitMod_data_profiles/grd_files
+cpt=colourT.cpt
+xlen=18
+size=18/3
+
+## read inputs from file $Input_Par_file
+if [ -f $Input_Par_file ]							
+then
+   awk '{if(NR==1){print $1} }' $Input_Par_file | read ftopo
+   awk '{if(NR==2){print $1,$2,$3,$4} }' $Input_Par_file | read lonmin lonmax latmin latmax 
+   awk '{if(NR==3){print $1,$2,$3,$4} }' $Input_Par_file | read  PxA_ll PyA_ll PxB_ll PyB_ll
+   awk '{if(NR==4){print $1,$2,$3,$4} }' $Input_Par_file | read  PxC_ll PyC_ll PxD_ll PyD_ll
+   awk '{if(NR==5){print $1} }' $Input_Par_file | read DIR_file
+   echo $DIR_file
+   ls -alg $DIR_file/*.grd
+else
+   ls -alg $DIR_file/*.grd
+   # this the region of grids	
+		
+   lonmin=-10
+   lonmax=6
+   latmin=32
+   latmax=45
+   # Alboran N-S
+#   PxA_ll=-4.3
+#   PyA_ll=38.9		
+#   PxB_ll=-1.7			
+#   PyB_ll=32.9			
+
+  
+   # W-E
+#   PxA_ll=-7
+#   PyA_ll=35.9		
+#   PxB_ll=2.5			
+#   PyB_ll=38.6			
+
+   # Algerian N-S
+   PxA_ll=1.0
+   PyA_ll=41.8		
+   PxB_ll=5.3			
+   PyB_ll=34.75			
+
+
+
+
+   # Previouse
+	  		     	#East	#West	#Main
+   #PxA_ll=-3.56	#-4.446	     	#-3.455	#1.089	#1.58  #-4.0
+   #PyA_ll=39.085	#41.129 		#43.64	#43.55 #31	
+   #PxB_ll=-1.046		#0.26	#0.94  #-5.5	
+   #PyB_ll=33.035		#41.46	#41.39 #33.7	
+
+   #PxC_ll=1.82			#0.26	#0.94  #-5.5
+   #PyC_ll=41.32			#41.46	#41.39 #33.7
+   #PxD_ll=5.74			#4.33	#5.18  #-5.5
+   #PyD_ll=35.24			#34.58	#34.45 #37.8
+
+   #PxE_ll=-5.5
+   #PyE_ll=37.8
+   #PxF_ll=-4.75
+   #PyF_ll=39.2
+
+fi
+
+region=$lonmin/$lonmax/$latmin/$latmax
+proj_width=75			# Width projection on the profile
+sampling=50			# on the profile
+Dkm=50
+
+echo "Enter grd File name? "
+#read I_file_grd
+for file in *.1.grd 
+do
+I_file_grd=$file
+file_out=$I_file_grd
+
+#Ddegree="1"	#"0.00833333"	#"0.05"	#"0.5"		### minimum 0.5m
+
+echo "   "
+echo Topography $ftopo
+echo Region $regioTot_ll
+echo Sampling cada $sampling km
+echo Banda dins la que projectem $proj_width km
+
+#######################################################
+echo "  "
+lon0=$((($PxA_ll+$PxB_ll)*0.5))	 ## Punt mig del perfil		$((($lonmin+$lonmax)*0.5))	## Punt Mig de la regio 	#lon0=-5.66	Estrecho de Gibraltar
+lat0=$((($PyA_ll+$PyB_ll)*0.5))	 ## Punt mig del perfil		$((($latmin+$latmax)*0.5))	## Punt Mig de la regio 	#lat0=36.0
+#latmig=$((($latmin+$latmax)*0.5))
+echo Origen centrat al perfil CD - Segon tram del perfil
+latmig=$lat0	
+echo "(Origen x,y) " $lon0 "E , " $lat0 "N   and medium latitud " $latmig "N"
+echo
+type_xy=2				# 1-regular grid   2-real distance (origen on the center)
+
+input_file_grd=$I_file_grd
+echo $input_file_grd
+cp $input_file_grd file_grd.tmp
+PxA=$PxA_ll
+PyA=$PyA_ll
+PxB=$PxB_ll
+PyB=$PyB_ll
+####  barres de dispersio					####  PROFILE 1 (A-B) ####
+echo "======================"
+echo "======================"
+echo "======================"
+echo "Starting Profile 1 A-B"
+echo "======================"
+#grdsample file_grd.tmp -Gt.grd -I0.1/0.1  
+grd2xyz file_grd.tmp -V > file_xyz.tmp
+awk '{print $1,$2,$NF}' file_xyz.tmp | project -Fpzxyrs -C$PxA/$PyA -E$PxB/$PyB -Lw -W-$proj_width/$proj_width -Q  | sort -g > file_projectat.tmp
+### passo a km el fitxer projectat
+echo $lon0 $lat0 $latmig $type_xy > filePosition_xytoll.tmp
+awk '{print $5,$6,$2,$1}' file_projectat.tmp > file_ll.tmp
+./lltoxy_reals.job	## input: file_ll.tmp,[filePosition_xytoll.tmp]   output: file_xy.tmp
+awk '{print $1/1e3,$2/1e3,$3,$4 }' file_xy.tmp > file_xy_km.tmp
+awk '{if(NR==1){print $1,$2}}' file_xy_km.tmp | read xP0 yP0
+awk '{print sqrt(($1-xP0)*($1-xP0)+($2-yP0)*($2-yP0)),$3,$4}' xP0=$xP0 yP0=$yP0 file_xy_km.tmp > file_proj_IN.tmp
+banda=$proj_width
+sampling_window_length=$sampling
+echo "Fine Here"
+echo $banda
+echo $sampling_window_length
+ls *.tmp
+./projbanda <<END
+file_proj_IN.tmp
+file_proj_OUT.tmp
+$sampling
+$sampling_window_length
+END
+
+wc file_proj_IN.tmp | read nrow a b c
+awk '{if(NR==1){print $1} }' file_proj_IN.tmp | read Dist0
+awk '{if(NR==nrow){print $1} }' nrow=$nrow file_proj_IN.tmp | read Dist1
+echo '  ----------------------------------------------------'
+echo    Profile AB: $Dist0  -  $Dist1 km   $xc1 $xc2
+echo '  ----------------------------------------------------'
+#R_cross_1=-R$Distance0/$Distance/$xc1/$xc2
+echo " origin ?"
+Dist0AB=0;
+echo " end ?"
+Dist1AB=625;
+######
+cp file_proj_IN.tmp tmpAB.IN
+name=`echo $file|awk -F. '{print $1}'`
+cp file_proj_OUT.tmp $name's.dat'
+rm file_pro*tmp
+rm *tmp
+done
+

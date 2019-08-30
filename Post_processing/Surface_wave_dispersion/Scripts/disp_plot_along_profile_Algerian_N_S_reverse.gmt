@@ -1,0 +1,363 @@
+#!/bin/bash
+gmtset PAPER_MEDIA a3 
+gmtset ANOT_FONT 1
+gmtset LABEL_FONT 1
+gmtset LABEL_FONT_SIZE 8p
+gmtset ANOT_FONT_SIZE 8p
+gmtset FRAME_PEN 0.1p
+gmtset GRID_PEN_PRIMARY 0.1p/grey
+gmtset ANOT_OFFSET = 0.030i
+gmtset LABEL_OFFSET = 0.015i
+#gmtset MAP_FRAME_TYPE ='inside'
+#echo "Enter profile length: "
+#read profile_len
+
+#echo "Enter resolution: "
+##########################################################################################3
+########### Profile locations
+##########################################################################################
+Alboran_Ax=1.0 #-4.446
+Alboran_Ay=41.8 #41.129
+Alboran_Bx=5.3
+Alboran_By=34.75
+A="1/41.8"
+B="5.3/34.75"
+
+#read reso
+obs_color=black
+obserr=0.1
+symbol_size=0.05 
+#plot_l=`echo " -0.02*$length" |bc`   
+rm -f disp_all.inp disp_all.out
+proj="-JX3/-4.5"
+bounds="-R2.3/5.0/0/180"
+#bounds="-R0/950/2.3/4.5" #full region
+miscB="-Ba0.5f0.5/a30f15WS" # without grids on map
+out=All_results_Algerian.ps
+misc=""
+pen_color=black
+obs_color=darkgrey
+calc_color=darkgreen
+err_color=black
+calc_pen=5p
+obs_pen=0.001p
+symbol_size=2p
+rf_amp=0.2 
+########################################################################################################################################################################################################
+#### plotting disperions curves
+########################################################################################################################################################################################################
+Syn_disp_dir=/home/akumar/owncloud/PHD/Profiles/Algerian/Final_profile/EGU2018/Synthetic_Dispersion
+Obs_disp_dir=/home/akumar/owncloud/PHD/Profiles/Algerian/Dispersion_curves/Algerian_N_S
+for i in 600  
+do
+#awk '{print $7,$6,$8}'  $disp_dir/"$i"_SURF96.inp|psxy  $proj $bounds  -Ba0.5f0.25:"Phase Velocity (km/s)":/a30f15:"Time period (s)":/WN:."": $misc -Sc$symbol_size -Ey/$err_color   -Y2 -W$obs_color  -V  -K > $out
+####Make the swath
+awk '{print $7+0.1,$6}'  $Obs_disp_dir/"$i"_SURF96.inp > tu
+awk '{print $7-0.1,$6}'  $Obs_disp_dir/"$i"_SURF96.inp > tl
+tac tl >tl_
+cat tu tl_ > tplot
+cat tplot|psxy  $proj $bounds  -Ba0.5f0.25:"Phase Velocity (km/s)":/a30f15:"Time period (s)":/WS:."": $misc  -X1.3  -Y1 -W$obs_color -G$obs_color -V  -K > $out
+rm -f tplot
+
+awk '{print $7,$6}'  $Syn_disp_dir/"$i"_SURF96.out|psxy  -J -R -Sc$symbol_size  -W$calc_color -G$calc_color -O -K -V >> $out
+#dist=`echo " 10*$i" |bc` 
+
+pstext -R -J -D-0/0 -G0/0/0 -O  -K << stopit >> $out
+3.0 150 10 0 1 CM `echo $i km`
+stopit
+psxy -R -J -W0.1,red -N -O -K -V  -m <<END>> $out
+0   20
+5.0   20
+END
+done
+miscB="-Ba0.5f0.25/a30f15ws" # without grids on map
+for i in  550 500 450 400 350 300 250 200 150 100 0 
+do
+#awk '{print $7,$6,$8}'  $disp_dir/"$i"_SURF96.inp|psxy  $proj $bounds  $miscB $misc -Sc$symbol_size -Ey/$err_color  -X4.5  -W$obs_color  -V  -K -O >> $out
+awk '{print $7+0.1,$6}'  $Obs_disp_dir/"$i"_SURF96.inp > tu
+awk '{print $7-0.1,$6}'  $Obs_disp_dir/"$i"_SURF96.inp > tl
+tac tl >tl_
+cat tu tl_ > tplot
+cat tplot|psxy  $proj $bounds  $miscB $misc    -X3.4 -W$obs_color -G$obs_color -V  -K -O >> $out
+rm -f tplot
+
+awk '{print $7,$6}'  $Syn_disp_dir/"$i"_SURF96.out|psxy  -J -R -Sc$symbol_size  -W$calc_color -G$calc_color -O -K -V >> $out
+#dist=`echo " 10*$i" |bc` 
+pstext -R -J -D-0/0 -G0/0/0 -O  -K << stopit >> $out
+3.0 150 10 0 1 CM `echo $i km`
+stopit
+psxy -R -J -W0.1,red -N -O -K -V  -m <<END>> $out
+0   20
+5.0   20
+END
+
+done
+
+rf_amp=0.2
+########################################################################################################################################################################################################
+#### plotting RF
+########################################################################################################################################################################################################
+Obs_RF_dir=/home/akumar/owncloud/PHD/Profiles/Algerian/RF_data/all_RF #/home/akumar/owncloud/PHD/Profiles/Alboran/N_S/Working_model/EGU_2018/Model_With_sediments/Synthetic_RF/all_RF
+Syn_RF_dir=/home/akumar/owncloud/PHD/Profiles/Algerian/Final_profile/EGU2018/Synthetic_RF
+proj="-JX3/-4.5"
+bounds="-R-5/10/-2/10" #full region
+miscB="-Ba20f10/a4f2W" # without grids on map
+#cd $RF_dir
+for i in 625 
+do
+#dist=`echo " 5*$i" |bc` 
+psbasemap $proj $bounds -Ba50f50::/a2f1:"Time (s)":/W:."":  -V -K -X-37.4 -Y5 -O >>$out
+#max=`sort -g -k2 $RF_dir/$i.r.xyz | tail -1 | awk '{print $2}'` #`sort -g -k2 temp | tail -1 | awk '{print $2}' | awk -F. '{print $1+2}'`
+#cat $RF_dir/$i.r.xyz| awk -v var=$max '{print   $2/var,$1}'| psxy  -J -R  -W$calc_color  -O -K -V >> $out
+cat $Obs_RF_dir/"$i".r.xyz| awk -v var=$max '{print   0,$1,$2}'| pswiggle  -R -J -Z$rf_amp  -C0 -P  -T0.1p,black  -W1p,grey  -V -K -O  -K -V >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> 
+cat $Syn_RF_dir/"$i"_vel.dat.eqr.xyz| awk -v var=$max '{print   0,$1,$2}'| pswiggle  -R -J -Z$rf_amp  -C0 -P  -T0.1p,black  -W1p,$calc_color  -V -K -O -O -K -V >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> $out
+#cat $Syn_RF_dir/$i*.xyz| awk -v var=$max '{print   $2/var,$1}'| psxy  -J -R  -W$calc_color  -O -K -V >> $out
+#pswiggle -J -R -B -Z0.5 -B -C0 -P -Gblack -T0.25p,grey  -W0.1,blue   -V -K -O >>$out
+pstext -R -J -D-0/0 -G0/0/0 -O  -K << stopit >> $out
+5 8 10 0 1 CM `echo $i km`
+stopit
+
+done
+
+
+miscB="-Ba20f10/a2f1w" # without grids on map
+for i in  615 605 595  
+do
+dist=`echo " 5*$i" |bc` 
+psbasemap $proj $bounds $miscB -X3.4  -V -K -O >>$out
+#max=`sort -g -k2 $RF_dir/$i.r.xyz | tail -1 | awk '{print $2}'` #`sort -g -k2 temp | tail -1 | awk '{print $2}' | awk -F. '{print $1+2}'`
+#cat $RF_dir/$i.r.xyz| awk -v var=$max '{print   $2/var,$1}'| psxy  -J -R  -W$calc_color  -O -K -V >> $out
+paste $Obs_RF_dir/"$i".r.xyz  $Obs_RF_dir/"$i"_sd.r.xyz> data
+awk '{print $1,$2+$4}'  data > tu
+awk '{print $1,$2-$4}'  data > tl
+tac tl >tl_
+cat tu tl_ > tplot
+#cat tplot|awk '{print $2*20,$1}'|psxy  -R -J     -W$obs_color -G$obs_color -V  -K -O >> $out
+
+#cat tu| awk '{print   0,$1,$2}'| pswiggle  -R -J -Z0.4  -C0 -P  -T0.1p,black  -W1p,$obs_color  -V -K -O >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> $out
+#cat tl| awk '{print   0,$1,$2}'| pswiggle  -R -J -Z0.4  -C0 -P  -T0.1p,black  -W1p,$obs_color  -V -K -O >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> $out
+cat $Obs_RF_dir/"$i".r.xyz| awk -v var=$max '{print   0,$1,$2}'| pswiggle  -R -J -Z$rf_amp  -C0 -P  -T0.1p,black  -W1p,grey  -V -K -O  -K -V >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> 
+-V >> $out
+cat $Syn_RF_dir/"$i"_vel.dat.eqr.xyz| awk -v var=$max '{print   0,$1,$2}'| pswiggle  -R  -J -Z$rf_amp  -C0 -P  -T0.1p,black  -W1p,$calc_color  -V -K -O -O -K -V >> $out #psxy  -J -R  -W$calc_color  -O -K 
+
+
+
+#cat $Syn_RF_dir/$i*.xyz| awk -v var=$max '{print   0,$2/var,$1}'| psxy  -J -R  -W$calc_color  -O -K -V >>
+pstext -R -J -D-0/0 -G0/0/0 -O  -K << stopit >> $out
+5 8 10 0 1 CM `echo $i km`
+stopit
+done
+
+##### with observed
+for i in  300  200 100  #   17 19 21 23 25 45 47 
+do
+#dist=`echo " 10*$i" |bc` 
+psbasemap $proj $bounds $miscB -X3.4  -V -K -O >>$out
+#max=`sort -g -k2 $RF_dir/$i.r.xyz | tail -1 | awk '{print $2}'` #`sort -g -k2 temp | tail -1 | awk '{print $2}' | awk -F. '{print $1+2}'`
+#cat $RF_dir/$i.r.xyz| awk -v var=$max '{print   $2/var,$1}'| psxy  -J -R  -W$calc_color  -O -K -V >> $out
+####Make the swath
+comm<<!
+paste $Obs_RF_dir/"$dist".r.xyz  $Obs_RF_dir/"$dist"_sd.r.xyz> data
+awk '{print $1,$2+$4}'  data > tu
+awk '{print $1,$2-$4}'  data > tl
+tac tl >tl_
+cat tu tl_ > tplot
+#cat tplot|awk '{print $2*20,$1}'|psxy  -R -J     -W$obs_color -G$obs_color -V  -K -O >> $out
+
+cat tu| awk '{print   0,$1,$2}'| pswiggle  -R -J -Z0.4  -C0 -P  -T0.1p,black  -W1p,$obs_color  -V -K -O >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> $out
+cat tl| awk '{print   0,$1,$2}'| pswiggle  -R -J -Z0.4  -C0 -P  -T0.1p,black  -W1p,$obs_color  -V -K -O >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> $out
+#pswiggle  -R -J -Z0.3  -C0 -P  -T0.1p,black  -W1p,red  -V -K -O -O -K -V >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> $out
+!
+cat $Syn_RF_dir/"$i"_vel.dat.eqr.xyz| awk -v var=$max '{print   0,$1,$2}'| pswiggle  -R -J -Z$rf_amp  -C0 -P  -T0.1p,black  -W1p,$calc_color  -V -K -O >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> $out
+#pswiggle  -R -J -Z0.3  -C0 -P  -T0.1p,black  -W1p,red  -V -K -O -O -K -V >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> $out
+rm -f tplot
+#cat $Obs_RF_dir/"$i".r.xyz| awk -v var=$max '{print   1,$1,$2}'| pswiggle  -R -J -Z0.3  -C0 -P  -T0.1p,black  -W1p,blue  -V -K -O  -K -V >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> 
+#cat $Syn_RF_dir/$i*.xyz| awk -v var=$max '{print   0,$2/var,$1}'| psxy  -J -R  -W$calc_color  -O -K -V >>
+pstext -R -J -D-0/0 -G0/0/0 -O  -K << stopit >> $out
+5 8 10 0 1 CM `echo $i km`
+stopit
+done
+
+for i in  65 55 25 15 0
+do
+dist=`echo " 10*$i" |bc` 
+psbasemap $proj $bounds $miscB -X3.4  -V -K -O >>$out
+#max=`sort -g -k2 $RF_dir/$i.r.xyz | tail -1 | awk '{print $2}'` #`sort -g -k2 temp | tail -1 | awk '{print $2}' | awk -F. '{print $1+2}'`
+#cat $RF_dir/$i.r.xyz| awk -v var=$max '{print   $2/var,$1}'| psxy  -J -R  -W$calc_color  -O -K -V >> $out
+#cat $Obs_RF_dir/"$i".r.xyz| awk -v var=$max '{print   0,$1,$2}'| pswiggle  -R -J -Z0.3  -C0 -P  -T0.1p,black  -W1p,grey  -V -K -O  -K -V >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> 
+paste $Obs_RF_dir/"$i".r.xyz  $Obs_RF_dir/"$i"_sd.r.xyz> data
+awk '{print $1,$2+$4}'  data > tu
+awk '{print $1,$2-$4}'  data > tl
+tac tl >tl_
+cat tu tl_ > tplot
+#cat tplot|awk '{print $2*20,$1}'|psxy  -R -J     -W$obs_color -G$obs_color -V  -K -O >> $out
+
+#cat tu| awk '{print   0,$1,$2}'| pswiggle  -R -J -Z0.4  -C0 -P  -T0.1p,black  -W1p,$obs_color  -V -K -O >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> $out
+#cat tl| awk '{print   0,$1,$2}'| pswiggle  -R -J -Z0.4  -C0 -P  -T0.1p,black  -W1p,$obs_color  -V -K -O >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> $out
+#pswiggle  -R -J -Z0.3  -C0 -P  -T0.1p,black  -W1p,red  -V -K -O -O -K -V >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> $out
+
+cat $Obs_RF_dir/"$i".r.xyz| awk -v var=$max '{print   0,$1,$2}'| pswiggle  -R -J -Z$rf_amp  -C0 -P  -T0.1p,black  -W1p,grey  -V -K -O  -K -V >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> 
+cat $Syn_RF_dir/"$i"_vel.dat.eqr.xyz| awk -v var=$max '{print   0,$1,$2}'| pswiggle  -R -J -Z$rf_amp  -C0 -P  -T0.1p,black  -W1p,$calc_color  -V -K -O -O -K -V >> $out #psxy  -J -R  -W$calc_color  -O -K -V >> $out
+
+
+#cat $Syn_RF_dir/$i*.xyz| awk -v var=$max '{print   0,$2/var,$1}'| psxy  -J -R  -W$calc_color  -O -K -V >>
+pstext -R -J -D-0/0 -G0/0/0 -O  -K << stopit >> $out
+5 8 10 0 1 CM `echo $i km`
+stopit
+done
+
+
+
+########################################################################################################################################################################################################
+#### plotting profile density
+########################################################################################################################################################################################################
+infile=./velocities_crust_mantle.dat
+# For gridding bounds
+profile_len=855
+bounds_len="-R0/$profile_len"
+bounds="-R0/$profile_len/0/400"
+misc=""
+plot_l=40 #`echo " -0.02*$profile_len" |bc`   
+plot_h=7
+obs_h=2.5
+obs_shift=`echo " $obs_h + 0.3" |bc`
+proj="-JX$plot_l/-$plot_h"
+#proj="-JX20/-8"
+#makecpt -Chot -M -I -T15/1800/50 >cpt.cpt
+#awk 'NR>2 {print $1, -$2, $3}' $temp  |  triangulate -Gtemp.grd $bounds -I5/1
+
+awk 'NR>2 {print $1, $2, $5}' $infile  | blockmedian  -I100m/100m $bounds -V  > t.xyz
+surface t.xyz -Gtemp.grd -I100m/100m $bounds -V -T0.5
+grdsample temp.grd -Gtemp.1.grd -N1101/901 $bounds -V 
+grdgradient temp.1.grd -A0 -M -Nt -Gtemp.int 
+####################
+###### mantle
+#grd2cpt  temp.1.grd >cpt.cpt
+grd2cpt  temp.1.grd -Cseis -S4.3/4.8/0.05 -L4.8/5.0 -Z -N   > cpt.cpt
+#grd2cpt  temp.1.grd -Cjet -S2.0/4.2/0.05 -L4.0/4.2 -Z  -N -I -V> cpt.cpt
+cptfile=cpt.cpt
+grdgradient temp.1.grd -A0 -M -Nt -Gtemp.int 
+grdimage temp.1.grd -C$cptfile $proj    -Ba50f50::/a50f25:"Depth (km)":/WsNe:."": -K  -X-37.5 -Y5.1 $misc -O>> $out
+#grdcontour temp.1.grd  $proj $bounds  -C0.05 -O -A0.1  -L4.3/4.8 -K -Wa1p/255/225/225ta -Wc0.6p/255/255/255  -K -O -V  >> $out 
+##############33
+#### plotting bodies
+awk '{print $1, -$2}' bodies_GUI.out |psxy  $proj $bounds  -m -B -W0.5p,white  -K    -O $misc >> $out;
+# Plotting the tomography scale
+
+
+#####################################
+###### Seismicity
+########################################
+# Focal Mech of Main Shock from profile view (computed by Debarchan)
+#awk 'NR==2 {print $14, $13, -$3, $4, $5, $6, $7/1.2, "0 0  "}' ${focalfile} | pscoupe -JX -R -B -Aa${A}/${B}/90/100/0/100 -Sa1.0c -W1p/170 -L -G255/0/0 -V -H0 -O -K >> $out
+#awk 'NR>8 {print $1, $2, -$3, $4, $5, $6,$7,$8,$9," ","   "} ' /home/akumar/owncloud/PHD/Profiles/LitMod_data_profiles/Alboran/seismology/global_cmt_search.txt | pscoupe -JX -R -B -Aa${A}/${B}/90/200/0/100 -Sa1.0c -W1p/180/180/180 -L -G0/0/255 -V -H0 -O -K >> $out
+#cat /home/akumar/owncloud/PHD/Profiles/LitMod_data_profiles/Alboran/seismology/eq_catalog_search_bu.txt|awk '{print $9,$8,$10}'  | project -C$A -E$B -Fpqz -Q  -W-50/50 | awk '{print $1, $3}' | psxy -J $bounds -R -Sc0.1 -W1/0/0/0 -G28/197/208 -O -K -V >> $out
+#awk '{print $9, $8, -$10}' ${eventfile} | project -C$A -E$B -Fpqz -Q  -W-50/50 | awk '{print $1, $3}' | psxy -JX -R -B -Sc0.1 -W1/0/0/0 -G28/197/208 -O -K -V >> $out
+cat /home/akumar/owncloud/PHD/Profiles/LitMod_data_profiles/Local_Regional_Seismicity/cmt_event.txt|awk '{ if ($11 >0.0) print $9,$8,$10}'  | project -C$A -E$B -Fpqz -Q  -W-25/25 | awk '{print $1, $3}' | psxy -J $bounds -R -Sc0.05 -W1/0/0/0 -Gbrown -O -K -V >> $out
+psscale -D35c/2c/7c/.5rh -C$cptfile -Ba0.2/:Vs:  -K -O  -Y0.5 >> $out
+
+
+####################
+###### crust
+#grd2cpt  temp.1.grd >cpt.cpt
+proj="-JX$plot_l/-2.5"
+bounds="-R0/$profile_len/0/45"
+grd2cpt  temp.1.grd -Cjet -S2.0/4.2/0.05 -L4.0/4.2 -Z -I -N > cpt.cpt
+cptfile=cpt.cpt
+grdgradient temp.1.grd -A0 -M -Nt -Gtemp.int 
+grdimage temp.1.grd -C$cptfile $proj  $bounds  -Ba50f50::/a10f5:"Depth (km)":/Wse:."": -K   -Y7.5 $misc -O>> $out
+#grdcontour temp.1.grd  $proj $bounds  -C0.05 -O -A0.1  -L4.3/4.8 -K -Wa1p/255/225/225ta -Wc0.6p/255/255/255  -K -O -V  >> $out 
+#psxy bodies.out $proj $bounds  -V    -W1 -Wblack   -K  -O  >> $out;
+# Plotting the tomography scale
+cat /home/akumar/owncloud/PHD/Profiles/LitMod_data_profiles/Local_Regional_Seismicity/cmt_event.txt|awk '{ if ($11 >0.0) print $9,$8,$10}'  | project -C$A -E$B -Fpqz -Q  -W-25/25 | awk '{print $1, $3}' | psxy -J $bounds -R -Sc0.05 -W1/0/0/0 -Gbrown -O -K -V >> $out
+##awk '{print $9, $8, -$10}' ${eventfile} | project -C$A -E$B -Fpqz -Q  -W-50/50 | awk '{print $1, $3}' | psxy -JX -R -B -Sc0.1 -W1/0/0/0 -G28/197/208 -O -K -V >> $out
+psscale -D37c/0.3c/4c/.3rh -C$cptfile -Ba0.5/:Vs:  -K -O -V -Y0.5 >> $out
+
+rm  -f temp.grd temp.1.grd
+
+
+
+
+##### For density
+comm<<!
+awk 'NR>2 {print $1, -$2, $3}' $dens |  blockmedian  -I100m/100m $bounds -V  > t.xyz
+surface t.xyz -Gtemp.grd -I500m/100m $bounds -V -T0.5
+grdsample temp.grd -Gtemp.1.grd -N1101/901 $bounds -V 
+makecpt -Cjet -M   -T0/1600/50 >cpt.cpt
+makecpt -Crainbow -I -N   -T2300/3500/50 >cpt.cpt
+makecpt -Chaxby -I -D -Z -T3225/3650/20 >cpt.cpt
+cptfile=cpt.cpt
+grdgradient temp.1.grd -A0 -M -Nt -Gtemp.int 
+grdimage temp.1.grd -C$cptfile $proj    -Ba50f50:"Distance (km)":/a50f25:"Depth (km)":/WSne:."": -K -V -X-49.5 -Y10 $misc -O>> $out
+#grdcontour temp.1.grd  $proj $bounds  -C20  -A20+k -Gd4i -L3200/3300 -K -Wa0.2p/255/225/225ta -Wc0.6p/255/255/255  -K -O -V  >> $out 
+grdcontour temp.1.grd  $proj $bounds  -C20 -O -A20 -L3200/3340 -K -Wa2/0/0/0ta -Wc0.2/0/0/0ta -K -O -V $misc >> $out 
+grdcontour temp.1.grd  $proj $bounds  -C40 -O -A40 -L3340/3600 -K -Wa2/0/0/0ta -Wc0.2/0/0/0ta -K -O -V $misc >> $out 
+#grdcontour codaq.grd -R -JM -C0.05 -O -A0.05 -L2.5/4.5 -K -Wa2/0/0/0ta -Wc0.5/0/0/0ta
+awk '{print $1, -$2}' ./../bodies_GUI.out |psxy  $proj $bounds  -m -B -W0.5p,white  -K    -O $misc >> $out;
+# Plotting the tomography scale
+psscale -D`echo " 1 - $plot_l  " |bc`c/3c/8c/0.5rv -C$cptfile -Ba50:"Density (kg/m@+3@+)":  -K -O -V -Y1.0 >> $out
+!
+#cd /home/akumar/owncloud/PHD/Profiles/Alboran/N_S/Working_model/EGU_2018/Model_With_sediments
+########################################################################################################################################################################################################
+#### plotting sufrace observables
+########################################################################################################################################################################################################
+topoin=./topo.inp
+topo=./topo_out.dat
+bougin=./boug.inp
+boug=./bouguer_out.dat
+freein=./FA.inp
+free=./FA_out.dat
+geoin=./geoid.inp
+geoid=./geoid_out.dat
+SHFout=./SHF_out.dat
+SHF=./HF.inp
+body=./bodies.out
+
+####
+#psxy $topoin  $bounds_len/-3500/3500 -JX$plot_l/$obs_h  -Ey/$obs_color  -Ba100f50g100/a1000f500g1000:"Elevation(m)":/Wsne -Sc0.01 -G$obs_color -Y10  -K -O $misc  >> $out;
+####Make the swath
+awk '{print $1,$2+$3}'  $topoin > tu
+awk '{print $1,$2-$3}'  $topoin > tl
+tac tl >tl_
+cat tu tl_ > tplot
+psxy tplot  $bounds_len/-3500/3500 -JX$plot_l/$obs_h    -Ba100f50/a1000f500:"Elevation(m)":/Wsne  -G$obs_color -Y2.2  -K -O $misc  >> $out;
+rm -f tplot
+awk 'NR>2 {print $1, $2}' $topo| psxy   $bounds_len/-3500/3500 -JX$plot_l/$obs_h     -W$calc_pen,red -K -O $misc >> $out;
+awk 'NR>2 {print $1, $3}' $topo| psxy   $bounds_len/-3500/3500 -JX$plot_l/$obs_h    -W$calc_pen,$calc_color -K -O  $misc >> $out;
+#psxy -R -J -W0.1p,grey,-- -N -O -K $misc  -m <<END>> $out
+#0   0
+#$profile_len   0.0
+#END
+#!
+########### bougure
+#psxy $bougin $bounds_len/-260/260 -JX$plot_l/$obs_h  -Ey/$obs_color -Ba100f50g100/a60f30g60:"Bouguer(mGal)":/Wsne -Sc0.01 -G$obs_color -Y$obs_shift -K -O  $misc >> $out;
+awk '{print $1,$2+$3}'  $bougin > tu
+awk '{print $1,$2-$3}'  $bougin > tl
+tac tl >tl_
+cat tu tl_ > tplot
+psxy tplot $bounds_len/-260/260 -JX$plot_l/$obs_h  -Ba100f50/a60f30:"Bouguer(mGal)":/Wsne  -G$obs_color -Y$obs_shift -K -O  $misc >> $out;
+rm -f tplot
+psxy $boug $bounds_len/-260/260 -JX$plot_l/$obs_h   -W$calc_pen,$calc_color -K -O $misc  >> $out;
+########### Geoid
+#psxy $geoin $bounds_len/-2/15 -JX$plot_l/$obs_h  -Ey/$obs_color -Ba100f50g100/a4f2g2:"Geoid(m)":/Wsne -Sc0.01 -G$obs_color -Y$obs_shift  -K -O  $misc >> $out;
+awk '{print $1,$2+$3}'  $geoin > tu
+awk '{print $1,$2-$3}' $geoin > tl
+tac tl >tl_
+cat tu tl_ > tplot
+psxy tplot $bounds_len/-2/15 -JX$plot_l/2   -Ba100f50/a4f2:"Geoid(m)":/Wsne  -G$obs_color -Y$obs_shift  -K -O  $misc >> $out;
+rm -f tplot
+psxy $geoid $bounds_len/-2/15 -JX$plot_l/2   -W$calc_pen,$calc_color  -O -K $misc >> $out;
+
+
+comm<<!
+########### SHF
+psxy $SHF $bounds_len/20/200 -JX$plot_l/2  -Ey/$obs_color -Ba100f50/a40f20:"Heat flow (mW/m@+2@+)":/Wsne -Sc0.1 -G$obs_color -Y$obs_shift  -K -O   >> $out;
+awk 'NR>1 {print $1, $2}' $SHFout| psxy  $bounds_len/20/200 -JX$plot_l/3   -W$calc_pen,$calc_color  -O -K  >> $out;
+#psxy file_rhoAverage.tmp $bounds_len/2650/2950 -JX$plot_l/3  -Ba100f50g100/a50f25g25:"Density(kg/m3)":/Wsne  -W$calc_pen,$calc_color  -O -Y4 $misc >> $out;
+psxy ${proj} ${bounds} -O < /dev/null >> ${out}
+
+!
+
+
+psxy -J -R -O < /dev/null >> $out
+gv $out

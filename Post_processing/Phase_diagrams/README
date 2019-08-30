@@ -1,0 +1,7 @@
+Sequence in which these scripts are to be called in the LitMod2D model directoty
+
+1. make_mineral_wise_files.sh -- it will make a folder name Phase_diagrams in your model directory and will put all necessary files for visualization
+
+2. python  phase_diagram_1D.py -- will plot depth distribution of wt%/vol%/moles at a distance point along the profile
+
+3. python phase_diagram_2D.py -- will plot distribution of a selected property mineral wise along the profile
