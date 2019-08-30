@@ -1,3 +1,0 @@
-1. -(E+PV) is the right order rather than -E+PV because former one give -ve velocity no matter what attenuation parameters are used. P is in Pascal T is in Kelvin
-
-2. About the P,T derivatives of velocity 

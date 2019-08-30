@@ -1,8 +1,0 @@
-This directory contains the input files needed to run a model 
-similar to that published in GJI on the Tonga Trench (Garcia-Castellanos 
-et al., 2000).  Note that due to small changes in some parameters in the 
-program, the forces needed to fit the bathymetry might differ slightly 
-relative to that paper.
-
-To run the project, type:
-tao Tonga
