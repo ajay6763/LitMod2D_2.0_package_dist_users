@@ -1,5 +1,5 @@
 #!/bin/bash
-source=/home/akumar/owncloud/PHD/LITMOD_package_Linux_dist_users/Post_processing/Surface_wave_dispersion
+source=$LitModHOME/Post_processing/Surface_wave_dispersion
 cp $source/modl.d ./
 cp $source/sobs.d ./
 cp $source/disp.d ./

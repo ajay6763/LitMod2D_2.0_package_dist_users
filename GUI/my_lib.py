@@ -56,27 +56,6 @@ import matplotlib
 
 #################################################################################
 
-########## function to draw a body
-class ArrayAdapter(TabularAdapter):
-
-    columns = [('i', 'index'), ('x', 0), ('y', 1), ('z', 2)]
-
-    # Font fails with wx in OSX; see traitsui issue #13:
-    # font        = Font('Courier 10')
-    alignment = 'right'
-    format = '%.4f'
-    index_text = Property
-    index_image = Property
-
-    def _get_index_text(self):
-        return str(self.row)
-
-    def _get_index_image(self):
-        x, y, z = self.item
-        if sqrt((x - 0.5) ** 2 + (y - 0.5) ** 2 + (z - 0.5) ** 2) <= 0.25:
-            return '@icons:red_ball'
-
-        return None
 
 class Canvas(HasTraits,object):
     #####################3##########################################################
@@ -2167,7 +2146,7 @@ class Canvas(HasTraits,object):
 #################################################################################
 #This function takes care of the closing the body. In future if I have to deal with 
 #invalid bodies porblems like intersection or void spaces between bodies
-# I have deal with that here
+# I have dealt with that here
 #################################################################################
     def _close_polygon(self,event):
         if event.button==3:
@@ -2510,7 +2489,7 @@ class Canvas(HasTraits,object):
 #################################################################################
 #This function takes care of process control and based on click on the button do the
 #corresponding function.
-# In future if new function have to added then that must be included here as well to add the process control loop
+# In future if new function have to be added then that must be included here as well to add the process control loop
 #################################################################################
 """
     def update_path(self,event):

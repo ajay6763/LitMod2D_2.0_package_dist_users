@@ -1,0 +1,183 @@
+#!/bin/zsh
+
+#####################################################################
+#################	September 2019	@ajay	#####################
+#####################################################################
+##### This script works for upto 4th version of GMT             #####
+##### Task- need to adapt this for GMT5 or higher version       #####
+#####If you do show please send me a copy at ajay6763@gmail.com #####
+#####################################################################
+#####   Plot results from Litmod:				#####
+#####  		1- P-wave velocities				#####
+#####		2- S-wave velocities  				#####
+#####		3- Their anomalies from a reference column	#####
+#####################################################################
+# setting GMT defaults
+gmtset PAPER_MEDIA a3 BASEMAP_TYPE plain
+gmtset ANOT_FONT 0
+gmtset LABEL_FONT 0
+gmtset LABEL_FONT_SIZE 10p
+gmtset ANOT_FONT_SIZE 10p
+gmtset FRAME_PEN 0.2p
+gmtset LABEL_OFFSET 0.1i
+
+
+
+#####################################
+#### gettin some info about model
+pwd 
+echo 'Enter path to the model:'
+read data
+echo
+echo "####################################################################"
+echo
+echo "You have following post processing output files from LitMod2D_2.0:"
+echo 
+ls post_processing_*.dat
+echo
+echo "####################################################################"
+echo
+echo "Please enter the name of post processing file from above:"
+echo
+read name
+########################################################################
+#### setting up the velocities file
+fileVLitMod=$data/$name #velocities.dat
+file_topo=topo.inp #PTOT_topo.dat
+wc $fileVLitMod | read numrow a b c
+awk '{if(NR==numrow) {print $1} }' numrow=$numrow $fileVLitMod | read Xmax
+XYdim=0/$Xmax/0/400
+#Set profile extension and scales
+left=0			### horizontal inicial point (km)
+right=$Xmax		### horizontal last point (km)
+Dx=10			### horizontal discrititzation (km)
+
+echo  'Enter profile length:'
+read  profile_len
+#profile_len=625
+# For gridding bounds
+#bounds_len="-R0/$profile_len"
+bounds="-R0/$profile_len/0/400"
+
+#######################################################
+######### PROFILES PLOTS ##############################
+plot_l=`echo " 0.02*$profile_len" |bc`   
+plot_h=8
+proj="-JX$plot_l/$plot_h"
+
+
+Jgraf=-JX$plot_l/-$plot_h #    X20/-3.7
+Jtopo=-JX$plot_l/1.7
+XYRegion=-R0/$profile_len/0/400 # $left/$right/0/400
+XYRegionVs=-R0/$profile_len/0/400  #$left/$right/0/250
+
+#########	Reference column to calculate the anomalies	############
+echo "Choose your option for the reference column:"
+echo "	1- Read the reference column from a file "
+echo "	2- Use a column from the model as a reference"
+read OptRefCol
+if [ $OptRefCol -eq 1 ]
+then
+   RefModel=$LitModHOME/Post_processing/Synthetic_Seismic_tomography/LitMod2D_Ref_Model_for_Syn_tomo.dat
+   cat $RefModel|awk '{print $1,$3}'>t_P
+   RefVp=t_P
+   cat $RefModel|awk '{print $1,$4}'>t_S
+   RefVs=t_S 
+
+   echo "Reading the reference column from the files: ", $RefVp, $RefVs
+   echo " Intro = OK "
+   read readok
+   cp $RefVp fileRefModelVp_xz.tmp
+   cp $RefVs fileRefModelVs_xz.tmp
+   #####################################
+   ### name of the output file
+   psfile=Litmod_Vanomalies_wrt_LitMod_ref
+else
+   echo "Enter location of reference: "
+   read XRef_column #=625				## x position of the reference column = XRef_column  km
+   echo "Reading the reference column from the x position: ", $XRef_column " km"
+   echo " Intro = OK "
+   read readok
+   awk '{if($5==0) {print $1, $2, "NaN"} else {print $1,$2,$5} }' $fileVLitMod > file_vel2.tmp	## Vp 
+   awk '{if($1=='$XRef_column'){print -$2,$3}}' file_vel2.tmp > fileRefModelVp_xz.tmp 		## Z depth, P-wave	->  Vp at the reference column
+   awk '{if($6==0) {print $1, $2, "NaN"} else {print $1,$2,$6} }' $fileVLitMod > file_vel4.tmp	## Vs
+   awk '{if($1=='$XRef_column'){print -$2,$3}}' file_vel4.tmp > fileRefModelVs_xz.tmp 		## Z depth, S-wave	->  Vs at the reference column		
+   #cp fileRefModelVp_xz.tmp ColumnRefModelVp.dat
+   #cp fileRefModelVs_xz.tmp ColumnRefModelVs.dat
+   psfile=Litmod_Vanomalies_wrt_profile_column
+fi
+
+
+
+###### cross-section (x,z) with the Vp from the reference column   #########
+for ((xpos=$left; xpos<=$Xmax; xpos=xpos+$Dx))
+do
+awk '{printf ("%i %f %f \n","'$xpos'",$1,$2) }' fileRefModelVp_xz.tmp >> fileRefModelVp_xyz.tmp  # X, Z, P-wave from the reference column
+done
+
+###### cross-section (x,z) with the Vs from the reference column   #########
+for ((xpos=$left; xpos<=$Xmax; xpos=xpos+$Dx))
+do
+awk '{printf ("%i %f %f \n","'$xpos'",$1,$2) }' fileRefModelVs_xz.tmp >> fileRefModelVs_xyz.tmp  # X, Z, S-wave from the reference column
+done
+
+###### Elevation Profile
+#psxy $file_topo -R$left/$right/-2500/3000 $Jtopo -B100f50/:"elevation (m)":a1000f500WenS -W4 -Xc -Y20 -V -P -K > $psfile.ps
+#psxy -R -J -Wgrey,-- -N -O -K $misc  -m <<END>> $psfile.ps
+#0   0
+#$profile_len   0
+#END
+########### P-wave velocity, Vp, resulting from LitMod ##############
+awk '{if($5==0) {print $1, -$2, "NaN"} else {print $1,-$2,$5}}' $fileVLitMod | nearneighbor $XYRegion -I1/0.5 -Gfile_VLitMod_grd.tmp -S10 -N4 -F -V
+########### P-wave anomalies  =  Vp from Litmod - Vp from a reference model   
+grdsample file_VLitMod_grd.tmp -I10/5 -Gfile_Vp_sample.tmp					### Vp resulting from LitMod
+nearneighbor fileRefModelVp_xyz.tmp $XYRegion -I10/5 -Gfile_vp_refModel_grd.tmp -S10 -N4 -F -V	### Vp from a reference model	
+grdsample file_vp_refModel_grd.tmp -I10/5 -Gfile_Vp_ref.tmp
+grdmath file_Vp_sample.tmp file_Vp_ref.tmp SUB = file_grdtmp.tmp				###  Difference
+grdmath file_grdtmp.tmp file_Vp_ref.tmp DIV 100 MUL = file_Panomaly.tmp				###  %
+makecpt -Cpolar -I  -D -T-3/3/0.2 > file_Panomaly.cpt.tmp
+#grd2cpt file_Panomaly.tmp -Cpolar -I -S-1./1./0.1 -L-1/0.9 -V -N > file_Panomaly.cpt.tmp
+psbasemap $XYRegion $Jgraf -V  -Ba100f50:"Distance (km)":/a50f10:"Depth (km)":/WSne:."": -K -Y18 -P > $psfile.ps
+grdimage file_Panomaly.tmp $XYRegion $Jgraf -Cfile_Panomaly.cpt.tmp -O -K -V >> $psfile.ps
+awk '{print $1, -$2}' $data/bodies_GUI.out |psxy  $XYRegion $Jgraf  -m -B -W0.5p,black  -K    -O $misc >> $psfile.ps;
+#psxy filebodies.tmp $XYRegion $Jgraf -W1 -M -V -O -K >> $psfile.ps
+grdcontour file_Panomaly.tmp  -S10 -W0.5,grey $XYRegion $Jgraf -A1f8 -L-2/-0.2 -O -K >> $psfile.ps
+grdcontour file_Panomaly.tmp  -S10 -W0.5,grey $XYRegion $Jgraf -A1f8 -L0.2/4 -O -K >> $psfile.ps
+#grdcontour file_Panomaly.tmp -C0.5 -S10  -W0.2,grey $XYRegion $Jgraf -A1f8 -L0.1/3 -O -K >> $psfile.ps
+#psscale -Cfile_Panomaly.cpt.tmp -D20.5/1.8/2/0.3 -B0.5:"Vp anomaly %": -V -O -K -N300 >> $psfile.ps
+psscale -D`echo " $plot_l + 0.5  " |bc`c/2.6c/-7c/0.5v -Cfile_Panomaly.cpt.tmp  -B0.5:"Vp anomaly %": -O -E -I -K  -Y1.0 >> $psfile.ps
+
+rm file_*.tmp
+
+
+########### S-wave velocity, Vs, resulting from LitMod ##############
+
+awk '{if($6==0) {print $1, -$2, "NaN"} else {print $1,-$2,$6}}' $fileVLitMod | nearneighbor $XYRegion -I1/0.5 -Gfile_VLitMod_grd.tmp -S10 -N4 -F -V
+
+########### S-wave anomalies  =  Vs from Litmod - Vs from a reference model  
+grdsample file_VLitMod_grd.tmp -I10/5 -Gfile_Vs_sample50.tmp				### Vs resulting from LitMod
+nearneighbor fileRefModelVs_xyz.tmp $XYRegion -I10/5 -Gfile_ref.tmp -S10 -N4 -F -V		### Vs from a reference model
+grdsample file_ref.tmp -I10/5 -Gfile_sampleRef.tmp
+grdmath file_Vs_sample50.tmp file_sampleRef.tmp SUB = file_anom1.tmp
+grdmath file_anom1.tmp file_sampleRef.tmp DIV 100 MUL = file_anomaly.tmp
+
+makecpt -Cpolar -I -D -M -T-4/4/0.2 > file_cpt.tmp
+#grd2cpt file_anomaly.tmp -Cpolar -I -S-1./1./0.1 -L-1/1 -V > file_cpt.tmp
+psbasemap $XYRegion $Jgraf -V -Ba100f50:"Distance (km)":/a50f10:"Depth (km)":WSne -K -Y-11 -O >> $psfile.ps
+cp file_anomaly.tmp file_clip.tmp
+grdimage file_anomaly.tmp $XYRegion $Jgraf -Cfile_cpt.tmp -O -K -V >> $psfile.ps
+awk '{print $1, -$2}' $data/bodies_GUI.out |psxy  $XYRegion $Jgraf  -m -B -W0.5p,black  -K    -O $misc >> $psfile.ps;
+#psxy filebodies.tmp $XYRegion $Jgraf -W1 -M -V -O -K >> $psfile.ps
+grdcontour file_anomaly.tmp -C1 -S10 -W0.2,white $XYRegion $Jgraf -A1f8 -L-2/-0.2 -O -K >> $psfile.ps
+grdcontour file_anomaly.tmp -C1 -S10 -W0.2,white $XYRegion $Jgraf -A1f8 -L0.2/4 -O -K >> $psfile.ps
+#psscale -Cfile_cpt.tmp -D20.5/1.8/2/0.3 -B0.5:"Vs anomaly %": -V -O -K -N300 >> $psfile.ps
+psscale -D`echo " $plot_l + 0.5  " |bc`c/2.6c/-7c/0.5v -Cfile_cpt.tmp  -B0.5:"Vs anomaly %": -O   -E  -Y1.0 >> $psfile.ps
+
+
+#rm file*.tmp
+rm -f $psfile.eps
+ps2eps $psfile.ps 
+#gv $psfile.ps
+evince  $psfile.eps &
+rm -f *.tmp
+
