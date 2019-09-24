@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2019.8.30)  30 AUG 2019 16:02
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2019.8.30)  24 SEP 2019 13:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -414,6 +414,28 @@ Package: authblk 2001/02/27 1.3 (PWD)
 \Urlmuskip=\muskip10
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
+(/usr/share/texlive/texmf-dist/tex/generic/dirtree/dirtree.sty
+Package: dirtree 2012/12/11 v0.32 package wrapper for dirtree
+
+(/usr/share/texlive/texmf-dist/tex/generic/dirtree/dirtree.tex
+`dirtree' v0.32, 2012/12/11 (jcc)
+\DT@offset=\dimen114
+\DT@width=\dimen115
+\DT@sep=\dimen116
+\DT@all=\dimen117
+\DT@rulewidth=\dimen118
+\DT@dotwidth=\dimen119
+\DTbaselineskip=\dimen120
+\DT@counti=\count96
+\DT@countii=\count97
+\DT@countiii=\count98
+\DT@countiv=\count99
+\DT@indent=\dimen121
+\DT@parskip=\dimen122
+\DT@baselineskip=\dimen123
+)
+File: dirtree.tex 2012/12/11 v0.32 `dirtree' (jcc)
+)
 
 LaTeX Warning: Unused global option(s):
     [14pt].
@@ -421,31 +443,31 @@ LaTeX Warning: Unused global option(s):
 (./LitMod_GUI_manual.aux)
 \openout1 = `LitMod_GUI_manual.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count96
-\scratchdimen=\dimen114
+\scratchcounter=\count100
+\scratchdimen=\dimen124
 \scratchbox=\box27
-\nofMPsegments=\count97
-\nofMParguments=\count98
+\nofMPsegments=\count101
+\nofMParguments=\count102
 \everyMPshowfont=\toks26
-\MPscratchCnt=\count99
-\MPscratchDim=\dimen115
-\MPnumerator=\count100
-\makeMPintoPDFobject=\count101
+\MPscratchCnt=\count103
+\MPscratchDim=\dimen125
+\MPnumerator=\count104
+\makeMPintoPDFobject=\count105
 \everyMPtoPDFconversion=\toks27
 ) (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
 Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
@@ -496,169 +518,170 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 27.
+(Font)              <12> on input line 28.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 27.
+(Font)              <8> on input line 28.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 27.
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 27.
+(Font)              <6> on input line 28.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 28.
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <8> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 27.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 28.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 27.
+(Font)              <5> on input line 28.
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <6> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 27.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 28.
  [1
 
 
 Non-PDF special ignored!{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 35.
+(Font)              <7> on input line 36.
 
-Underfull \hbox (badness 10000) in paragraph at lines 39--40
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 41--43
+Underfull \hbox (badness 10000) in paragraph at lines 52--56
 
  []
 
 
-LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `tbp') on input line 46.
+Underfull \hbox (badness 10000) in paragraph at lines 57--58
+
+ []
 
 
-Overfull \hbox (134.52983pt too wide) in paragraph at lines 47--64
-[][] 
+Underfull \hbox (badness 10000) in paragraph at lines 59--60
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 61--62
+
  []
 
 [1]
 Package epstopdf Info: Source file: <./welcome.eps>
-(epstopdf)                    date: 2019-08-18 08:28:37
+(epstopdf)                    date: 2019-09-23 22:13:13
 (epstopdf)                    size: 1900674 bytes
 (epstopdf)             Output file: <./welcome-eps-converted-to.pdf>
-(epstopdf)                    date: 2019-08-18 08:28:37
+(epstopdf)                    date: 2019-09-23 22:13:13
 (epstopdf)                    size: 95162 bytes
 (epstopdf)             Command: <repstopdf --outfile=./welcome-eps-converted-to
 .pdf ./welcome.eps>
-(epstopdf)             \includegraphics on input line 102.
+(epstopdf)             \includegraphics on input line 131.
 Package epstopdf Info: Output file is already uptodate.
- <./welcome-eps-converted-to.pdf, id=19, 301.125pt x 763.85374pt>
+ <./welcome-eps-converted-to.pdf, id=17, 301.125pt x 763.85374pt>
 File: ./welcome-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./welcome-eps-converted-to.pdf>
-Package pdftex.def Info: ./welcome-eps-converted-to.pdf used on input line 102.
+Package pdftex.def Info: ./welcome-eps-converted-to.pdf used on input line 131.
 
 (pdftex.def)             Requested size: 120.0pt x 304.4055pt.
 Package epstopdf Info: Source file: <./build1.eps>
-(epstopdf)                    date: 2019-08-18 08:28:37
+(epstopdf)                    date: 2019-09-23 22:13:13
 (epstopdf)                    size: 793744 bytes
 (epstopdf)             Output file: <./build1-eps-converted-to.pdf>
-(epstopdf)                    date: 2019-08-18 08:28:37
+(epstopdf)                    date: 2019-09-23 22:13:13
 (epstopdf)                    size: 33884 bytes
 (epstopdf)             Command: <repstopdf --outfile=./build1-eps-converted-to.
 pdf ./build1.eps>
-(epstopdf)             \includegraphics on input line 114.
+(epstopdf)             \includegraphics on input line 143.
 Package epstopdf Info: Output file is already uptodate.
 
-<./build1-eps-converted-to.pdf, id=20, 227.85126pt x 530.98375pt>
+<./build1-eps-converted-to.pdf, id=18, 227.85126pt x 530.98375pt>
 File: ./build1-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./build1-eps-converted-to.pdf>
-Package pdftex.def Info: ./build1-eps-converted-to.pdf used on input line 114.
+Package pdftex.def Info: ./build1-eps-converted-to.pdf used on input line 143.
 (pdftex.def)             Requested size: 120.0pt x 279.65376pt.
 
-<./build2.jpg, id=21, 1860.9525pt x 1065.9825pt>
+<./build2.jpg, id=19, 1860.9525pt x 1065.9825pt>
 File: ./build2.jpg Graphic file (type jpg)
  <use ./build2.jpg>
-Package pdftex.def Info: ./build2.jpg used on input line 119.
+Package pdftex.def Info: ./build2.jpg used on input line 148.
 (pdftex.def)             Requested size: 360.0pt x 206.19853pt.
 
-Overfull \hbox (15.0pt too wide) in paragraph at lines 119--120
+Overfull \hbox (15.0pt too wide) in paragraph at lines 148--149
  [][] 
  []
 
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 125.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 154.
 [2 <./welcome-eps-converted-to.pdf>] [3 <./build1-eps-converted-to.pdf> <./buil
-d2.jpg>] <./build_property.jpg, id=35, 757.83125pt x 469.755pt>
+d2.jpg>] <./build_property.jpg, id=34, 757.83125pt x 469.755pt>
 File: ./build_property.jpg Graphic file (type jpg)
 
 <use ./build_property.jpg>
-Package pdftex.def Info: ./build_property.jpg used on input line 137.
+Package pdftex.def Info: ./build_property.jpg used on input line 166.
 (pdftex.def)             Requested size: 300.0pt x 185.96335pt.
  [4 <./build_property.jpg>] [5]
-Overfull \hbox (20.40634pt too wide) in paragraph at lines 179--181
+Overfull \hbox (20.40634pt too wide) in paragraph at lines 208--210
 \OT1/cmr/m/n/10 LitMod2D[]2.0[]V4[]VS[]Windows for win-dows and should be in Li
 t-Mod2D[]2.0[]package
  []
 
 
-Overfull \hbox (28.7619pt too wide) in paragraph at lines 179--181
+Overfull \hbox (28.7619pt too wide) in paragraph at lines 208--210
 \OT1/cmr/m/n/10 folder and for Linux it should be in same folder with name Lit-
 Mod2D[]2.0[]V4[]VS[]Linux. 
  []
 
 [6]
-Underfull \hbox (badness 10000) in paragraph at lines 188--190
+Underfull \hbox (badness 10000) in paragraph at lines 217--219
 
  []
 
-<./genrator_full_properties.png, id=46, 755.82375pt x 589.20125pt>
+<./genrator_full_properties.png, id=45, 755.82375pt x 589.20125pt>
 File: ./genrator_full_properties.png Graphic file (type png)
 
 <use ./genrator_full_properties.png>
-Package pdftex.def Info: ./genrator_full_properties.png used on input line 195.
+Package pdftex.def Info: ./genrator_full_properties.png used on input line 224.
 
 (pdftex.def)             Requested size: 180.0pt x 140.31435pt.
  [7]
-<./Minerals_1D_ref.png, id=50, 644.28705pt x 389.35463pt>
+<./Minerals_1D_ref.png, id=49, 644.28705pt x 389.35463pt>
 File: ./Minerals_1D_ref.png Graphic file (type png)
 
 <use ./Minerals_1D_ref.png>
-Package pdftex.def Info: ./Minerals_1D_ref.png used on input line 205.
+Package pdftex.def Info: ./Minerals_1D_ref.png used on input line 234.
 (pdftex.def)             Requested size: 240.0pt x 145.0333pt.
- <./wt_2D.png, id=52, 1340.6085pt x 718.3638pt>
+ <./wt_2D.png, id=51, 1340.6085pt x 718.3638pt>
 File: ./wt_2D.png Graphic file (type png)
 
 <use ./wt_2D.png>
-Package pdftex.def Info: ./wt_2D.png used on input line 211.
+Package pdftex.def Info: ./wt_2D.png used on input line 240.
 (pdftex.def)             Requested size: 300.0pt x 160.74797pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 218--227
+Underfull \hbox (badness 10000) in paragraph at lines 247--256
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 218--227
+Underfull \hbox (badness 10000) in paragraph at lines 247--256
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 218--227
+Underfull \hbox (badness 10000) in paragraph at lines 247--256
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 218--227
+Underfull \hbox (badness 10000) in paragraph at lines 247--256
 
  []
 
 [8 <./genrator_full_properties.png>] [9 <./Minerals_1D_ref.png> <./wt_2D.png>]
 [10] (./LitMod_GUI_manual.aux) ) 
 Here is how much of TeX's memory you used:
- 2220 strings out of 493029
- 29474 string characters out of 6136234
- 94538 words of memory out of 5000000
- 5715 multiletter control sequences out of 15000+600000
- 8409 words of font info for 30 fonts, out of 8000000 for 9000
+ 2291 strings out of 493029
+ 30470 string characters out of 6136234
+ 95476 words of memory out of 5000000
+ 5781 multiletter control sequences out of 15000+600000
+ 8063 words of font info for 29 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 38i,12n,23p,941b,343s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,9n,23p,941b,319s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/publ
 ic/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
 fonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
@@ -668,12 +691,11 @@ cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr1
 re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/tex
 live/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/te
 xmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/font
-s/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on LitMod_GUI_manual.pdf (11 pages, 1850539 bytes).
+t/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on LitMod_GUI_manual.pdf (11 pages, 1841298 bytes).
 PDF statistics:
- 100 PDF objects out of 1000 (max. 8388607)
- 64 compressed objects within 1 object stream
+ 96 PDF objects out of 1000 (max. 8388607)
+ 61 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  36 words of extra memory for PDF output out of 10000 (max. 10000000)
 

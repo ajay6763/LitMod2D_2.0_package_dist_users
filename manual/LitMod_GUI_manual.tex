@@ -8,6 +8,7 @@
 \usepackage{rotating}
 \usepackage[]{authblk}
 \usepackage{url}
+\usepackage{dirtree}
 
 \title{LitMod2D\_2.0 python GUI manual}
 \author[1]{Ajay Kumar \thanks{SUBITOP (http://www.subitop.eu/home/)}}
@@ -32,36 +33,64 @@ LitMod2D\_2.0 is a finite element code which combines potential field, geochemic
 This document is a manual for a python based GUI to build the model where the user draws geometry of the bodies in the cross-section and associate physical properties to those bodies.
 
 \section{Installation}
-Generally, Linux comes with installed python2.7 but in Windows you might have to install python2.7 (\url{https://www.python.org/getit/}).
-This GUI uses packages from python which do not come pre-installed with stand-alone python installation. This GUI is python2.7 compatible. All packages used here can be installed using "pip" a python package manager which can be easily installed in Windows or Linux distributions (\url{https://pip.pypa.io/en/stable/installing/}).
+User can download or clone the package from \url{https://github.com/ajay6763/LitMod2D_2.0_package_dist_users.git}. You will have following directory structure.
+  
+\dirtree{%
+.1 LitMod2D\_2.0\_package\_dist\_users.
+.2 Generator\_Linux -- to generate material file.
+.2 GUI -- includes the GUI in python.
+.2 manual -- Manual for GUI use.
+.2 Post\_processing -- packages for post-processing.
+.3 flexure\_tao.
+.3 Phase\_diagrams.
+.3 RF.
+.3 Surface\_wave\_dispersion.
+.3 Synthetic\_Seismic\_tomography.
+.2 REAME.md.
+}
 
-\subsection{Packages needed}
-Following is the list of python packages one needs to install. To install any package you have run following command in your terminal: \\
+\
+To setup Generator, follow the instructions in REAME.md file in the Generator\_Linux directory.\\
+Now we need to setup the GUI which essentially means we need to install python liberaries. Generally, Linux comes with installed python2.7 but in Windows you might have to install python2.7 (\url{https://www.python.org/getit/}).
+This GUI uses packages from python which do not come pre-installed with stand-alone python installation.This GUI is python2.7 compatible. All packages used here can be installed using "pip" a python package manager which can be easily installed in Windows or Linux distributions (\url{https://pip.pypa.io/en/stable/installing/}).\\
 
-\textit{sudo pip install {package\_name}=={version}} \\
-example: \\
+Once you have the python and pip setup go into the GUI directory and run the following command: \\
 
-\textit{sudo pip install matplotlib==1.5.2}
-\vspace{20pt}
-\begin{table}[]
-\begin{tabular}{ll}
-\textbf{Package name} &   \textbf{Version}\\
-matplotlib	 & 	1.5.2  \\
-traits		 &	4.6.0  \\
-traitsui	 &	4.5.1  \\
-shapely		 &	1.6.4  \\
-pyface		 &	6.0.0  \\
-Pillow      * For Windows \\ 
-Pygments    * For Windows \\
-PyQt4  * For this go to here\\
- (\url{https://www.lfd.uci.edu/~gohlke/pythonlibs/ and download it}\\
+pip install -r requirements.txt\\
+
+This should have you almost everything needed for the GUI.\\
+
+  
+
+
+
+%\subsection{Packages needed}
+%Following is the list of python packages one needs to install. To install any package you have run following command in your terminal: \\
+
+%\textit{sudo pip install {package\_name}=={version}} \\
+%example: \\
+
+%\textit{sudo pip install matplotlib==1.5.2}
+%\vspace{20pt}
+%\begin{table}[]
+%\begin{tabular}{ll}
+%\textbf{Package name} &   \textbf{Version}\\
+%matplotlib	 & 	1.5.2  \\
+%traits		 &	4.6.0  \\
+%traitsui	 &	4.5.1  \\
+%shapely		 &	1.6.4  \\
+%pyface		 &	6.0.0  \\
+%Pillow      * For Windows \\ 
+%Pygments    * For Windows \\
+%PyQt4  * For this go to here\\
+% (\url{https://www.lfd.uci.edu/~gohlke/pythonlibs/ and download it}\\
  
-** For some liberaries (usually traits, shapely) you migh to download them form above address
+%** For some liberaries (usually traits, shapely) you migh to download them form above address
 
                      
- & 
-\end{tabular}
-\end{table}
+% & 
+%\end{tabular}
+%\end{table}
 
 %\begin{itemize} 
 %\item \textbf{Matplotlib}:Matplotlib is a plotting library in python. It needs other packages as well. To take care of everything you only have to do following:
@@ -96,7 +125,7 @@ PyQt4  * For this go to here\\
 %\end{itemize}
 \vspace{50pt}
 \section{How to make and work with models?}
-To start the GUI go to the LitMod2D\_2.0 package folder and run main.py (in Linux type " python main.py" in Windows you can double click on the main.py file) , running which Fig.~\ref{welcome} will appear. Here you have three options. Build model option is to build a model from scratch. Load Model is to load a previously build model and the last option is about help.\\
+To start the LitMod2D\_2.0 go into GUI folder and run main.py (in Linux type " python main.py" in Windows you can double click on the main.py file), running which Fig.~\ref{welcome} will appear. Here you have three options. Build model option is to build a model from scratch. Load Model is to load a previously build model and the last option is about help.\\
 **Note: In dialog boxes, put your mouse in a field and additional information will appear. 
 \begin{figure}
 \centering \includegraphics[width=10pc,angle=-90]{./welcome.eps}
