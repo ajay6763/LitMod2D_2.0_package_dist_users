@@ -1,18 +1,26 @@
 # Generator
+Info
 Perplex based program to produce thermophysical table used in LitMod
 
-Before running this you have to do following:
+** To run this program in Linux based platform you need to install "wine"
+. This allows you to run *.exe files.
 
-1. put *.exe (this means all exe file) in your path
+To install wine run following commands in the terminal
 
-2. install wine run these exe files 
+"sudo apt-get install wine-binfmt
+"sudo update-binfmts --import /usr/share/binfmts/wine"
 
 
-Then may be make Generator_LINUX executable by running following commnad
 
-chmod 755 Generator_LINUX
+Put all the .exe file in your path throught ~/.bashsrc file
+ 
 
-and them run 
+After you have done as suggested above, you run "Generator_LINUX" from the same directory.
+You have to make it executable by changing it permission by running following command.
 
-./Generator_LINUX
-  
+"chmod 755 Generator_LINUX"
+
+then
+"./Generator_LINUX"
+
+ 
