@@ -53,7 +53,7 @@ for i in range(len(data)):
 
 f=open("post_processing_output_crust_mantle.dat","w")
 for i in range(len(data)):
-	f.writelines(" %f  %f  %f  %f  %f %f %f %f %f  \n " % (data[i,0],data[i,1],data[i,2],data[i,3], data[i,4],data[i,5],data[i,6]/1000,Qp[i],Qs[i]))
+	f.writelines(" %f  %f  %f  %f  %f %f %f %f %f  \n " % (data[i,0],data[i,1],data[i,2],data[i,3],data[i,4],data[i,5],data[i,6]/1000,Qp[i],Qs[i]))
 f.close()
 data=np.loadtxt("post_processing_output_crust_mantle.dat",)
 x_nodes=length/reso
@@ -78,7 +78,7 @@ HR         VP       VS         RHO    QP    QS    ETAP  ETAS FREFP FREFS \n")
 			#print  i,j
 			#Parameters
 			f.writelines("%f    \t  %f    \t  %f   \t  %f   \t   %s   \t  %s  \t %s \t  %s \t  %s  \t %s \n"
-    	 	 %(data[j+1,1]-data[j,1] ,  data[j,3],   data[j,4],  data[j,2], data[j,7],  data[j,8], "0.0",  "0.0",  "1.0", "1.0"))
+    	 	 %(-(data[j+1,1]+data[j,1]) ,  data[j,4],   data[j,5],  data[j,6], data[j,7],  data[j,8], "0.0",  "0.0",  "1.0", "1.0"))
 	f.writelines("0.000000    	  9.030200    	  4.870200   	  3.506800   	   377.930000   	  146.570000  	 0.0 	  0.0 	  1.0  	 1.0 \n")
 	f.writelines("50.000000    	  9.360100    	  5.080600   	  3.931700   	   413.660000   	  162.500000  	 0.0 	  0.0 	  1.0  	 1.0 \n")
 	f.writelines("50.000000    	  9.528000    	  5.186400   	  3.927300   	   417.320000   	  164.870000  	 0.0 	  0.0 	  1.0  	 1.0 \n")
