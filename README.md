@@ -4,9 +4,9 @@ LitMod2D_2.0 is a tool  to unravel the thermal, compositional, density, and seis
 
 #### Dependency
 * Python2.7
-** matplotlib==2.0.0
-** numpy==1.12.1
-** pandas==0.23.4
+-- matplotlib==2.0.0
+-- numpy==1.12.1
+-- pandas==0.23.4
 ** Pillow==5.1.0
 ** pluggy==0.8.0
 ** properties==0.4.0
