@@ -8,8 +8,9 @@
 ##### this script to work.                                      #####
 ##### It produces RF and dispersion curves at each distance     #####
 ##### point along the profile.					#####
-
-
+##### Option for Love or Rayleigh Phase or Group velocities are ##### 
+##### provided.							#####
+##### Minimum and Maximum period is 25 s  to 250 s              ##### 
 #####################################################################
 #################	Tasks	    @ajay	#####################
 #####################################################################
