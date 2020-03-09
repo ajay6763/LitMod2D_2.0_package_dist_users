@@ -506,7 +506,7 @@ class Canvas(HasTraits,object):
         if event.inaxes:
             #self.x =event.xdata #round(event.xdata/float(self.reso))*float(self.reso) # rounding to the multiple resolution in x  #np.ceil(event.xdata)
             #self.x =round(event.xdata/float(self.reso))*float(self.reso) # rounding to the multiple resolution in x  #np.ceil(event.xdata)
-            self.x =round(event.xdata/2.0)*float(2.0) # rounding to the multiple resolution in x  #np.ceil(event.xdata)
+            self.x =round(event.xdata/self.reso)*float(self.reso) # rounding to the multiple resolution in x  #np.ceil(event.xdata)
             #temp_d=[abs(event.ydata-self.Z[i]) for i in range(len(self.Z))]
             #temp_index=temp_d.index(min(temp_d))
             if self.body_type =="anomaly":
