@@ -198,6 +198,6 @@ class Page3(tk.Frame):
 	 	canvas._tkcanvas.pack(side=tk.TOP,fill=tk.BOTH,expand=True)
 """
 
-
-app=lithmod()
-app.mainloop()
+if __name__ == "__main__":
+	app=lithmod()
+	app.mainloop()

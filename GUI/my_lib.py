@@ -64,7 +64,7 @@ class Canvas(HasTraits,object):
     #### body properties
     name = "mantle"
     color = Enum('green','blue','yellow','red','pink','orange','purple','cyan','magenta','black','white','gold','grey','violet','maroon','aqua','lime','tan','rosybrown')
-    color_edi=Color('blue')
+    color_edi= Color('blue')
     Body_number= "0"
     #depth_density_factor= "0.000E+00"
     #ref_density = "3.245E+03"
@@ -506,7 +506,7 @@ class Canvas(HasTraits,object):
         if event.inaxes:
             #self.x =event.xdata #round(event.xdata/float(self.reso))*float(self.reso) # rounding to the multiple resolution in x  #np.ceil(event.xdata)
             #self.x =round(event.xdata/float(self.reso))*float(self.reso) # rounding to the multiple resolution in x  #np.ceil(event.xdata)
-            self.x =round(event.xdata/self.reso)*float(self.reso) # rounding to the multiple resolution in x  #np.ceil(event.xdata)
+            self.x =round(event.xdata/float(self.reso))*float(self.reso) # rounding to the multiple resolution in x  #np.ceil(event.xdata)
             #temp_d=[abs(event.ydata-self.Z[i]) for i in range(len(self.Z))]
             #temp_index=temp_d.index(min(temp_d))
             if self.body_type =="anomaly":
@@ -1436,6 +1436,8 @@ class Canvas(HasTraits,object):
                     ### setting up the drawing path
                     self.path=[]
                     self.vert = []
+                elif self.ans=='no':
+                    pass
                 else:
                     self.body_type='normal'
                     print("Entered body number is not valid.")
