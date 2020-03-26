@@ -1,12 +1,5 @@
-from matplotlib.patches import Polygon
-import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
-import matplotlib.ticker as ticker
-from numpy import sqrt
-import numpy as np
 from shapely.geometry.polygon import  Polygon as Shape
 from shapely.ops import cascaded_union # to merge polygons
-from shapely.geometry import  Point, LinearRing
 def shape_substract(x_envelope_1,x_envelope_2,y_envelope_1,y_envelope_2):
     a=Shape()
     poly_1=Shape()

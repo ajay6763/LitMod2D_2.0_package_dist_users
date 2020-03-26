@@ -1,22 +1,16 @@
 #### ploting liberary
 import matplotlib as plt
-import matplotlib
 from matplotlib.patches import Polygon
-import matplotlib.patches as mpatches
-import numpy as np
 import matplotlib as mpl
-from traits.api import HasTraits, Str, Int, Float, Enum, Array, File, Directory
-from traitsui.api import View, Item, Group, HSplit, Handler 
-from traitsui.menu import OKButton, CancelButton, ApplyButton,UndoButton
-import traitsui
+import numpy as np
 import os
 from matplotlib.widgets import MultiCursor
 from matplotlib import style
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from pylab import *
+import matplotlib
 matplotlib.rcParams.update({'errorbar.capsize': 2})
-
 origin = 'lower'
 label_size = 4
 marker_size =2

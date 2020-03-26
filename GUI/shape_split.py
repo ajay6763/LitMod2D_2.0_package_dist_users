@@ -1,22 +1,21 @@
-from matplotlib.patches import Polygon
-import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
-import matplotlib.ticker as ticker
 from numpy import sqrt
-import numpy as np
 from shapely.geometry.polygon import  Polygon as Shape
 from shapely.ops import cascaded_union # to merge polygons
-from shapely.geometry import  Point, LinearRing
 import math
 
 def shape_split(vert,l_split,b_split,l,b):
+    ###############
+    ### Here getting the coordinates of the split axis drwan
     x_drawn = [vert[k][0] for k in range(len(vert))]
     y_drawn = [vert[k][1] for k in range(len(vert))]
     x_st=x_drawn[0] #x_st[n_bod-1]=x
     y_st=y_drawn[0]#y_st[n_bod-1]=y
     x_end=x_drawn[-1]
     y_end=y_drawn[-1]
-    ## figuring out where does this fall in body to be split
+
+
+    ###############
+    ### figuring out where does the drwan axis fall in the body to be split
     print ("start index for split")
     temp_d=[]
     temp_d=[ math.sqrt((l_split[i] - x_st)**2 + 
@@ -28,10 +27,28 @@ def shape_split(vert,l_split,b_split,l,b):
         (b_split[i] - y_end)**2) for i in range(len(l_split))]
     split_end_index=temp_d.index(min(temp_d))
     print('updating path ')
+    
+    # calculating the x and y of the node to be inserted
+    # x = (x-1) +( x+1)
+    #
+    l_insert_st = (l_split[split_st_index] + l_split [split_st_index+1])/2
+    b_insert_st = (b_split[split_st_index] + b_split [split_st_index+1])/2
+    l_insert_end = (l_split[split_end_index] + l_split [split_end_index-1])/2
+    b_insert_end = (b_split[split_end_index] + b_split [split_end_index-1])/2
+    
+    '''
+    #####
+    # Now need to put this in the original enevelop
+    l_split.insert(split_st_index,l_insert_st)
+    b_split.insert(split_st_index,b_insert_st)
+    l_split.insert(split_end_index,l_insert_end)
+    b_split.insert(split_end_index,b_insert_end)
+    '''
+
     path=[]
     vert = []
     print ("adding in the start from the actual body")
-    for k in range(0,split_st_index):
+    for k in range(0,split_st_index+1):
         print (k)
         vert.append((l_split[k],b_split[k]))
     print ("adding the drwan points")
@@ -49,8 +66,7 @@ def shape_split(vert,l_split,b_split,l,b):
     # close the body
     ## calculating inserted body 
     temp_1_shape=Shape(vert[:][:])
-    temp_2_shape=Shape([( l[k], b[k]) 
-        for k in range(len(l))])
+    temp_2_shape=Shape([( l_split[k], b_split[k]) for k in range(len(l))])
     a=Shape();xa=[];ya=[]
     a=temp_2_shape.difference(temp_1_shape)# this the left over part of the splitted body
     err=a.is_valid

@@ -1,14 +1,5 @@
-
-from matplotlib.patches import Polygon
-import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
-import matplotlib.ticker as ticker
-from numpy import sqrt
-import numpy as np
 from shapely.geometry.polygon import  Polygon as Shape
 from shapely.ops import cascaded_union # to merge polygons
-from shapely.geometry import  Point, LinearRing
-import math
 import shape_sum as shape_sum
 def make(l,b):
     x_envelope=[]

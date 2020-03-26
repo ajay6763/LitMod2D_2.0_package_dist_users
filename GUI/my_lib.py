@@ -1,62 +1,44 @@
-
 #####################################################################################################
 # This is the library which contains functions used in the main.py
 #####################################################################################################
-from matplotlib.lines import Line2D
-import matplotlib.image as image
-from matplotlib.patches import Polygon
-import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
-import matplotlib.ticker as ticker
-from numpy import sqrt
 import numpy as np
 from shapely.geometry.polygon import  Polygon as Shape
-from shapely.ops import cascaded_union # to merge polygons
-from shapely.geometry import  Point, LinearRing
-from matplotlib.widgets import Button,Cursor
-from matplotlib.figure import Figure
+import shapely as shapely
 from traits.api import HasTraits, Str, Int, Float, Enum, Array, File, Directory
-from traitsui.api import View, Item, Group, HSplit, Handler ,TabularEditor
-from traitsui.ui_editors.array_view_editor import ArrayViewEditor
+from traitsui.api import View, Item, Group, HSplit, Handler 
 from traitsui.tabular_adapter import TabularAdapter
-
 from traitsui.menu import OKButton, CancelButton, ApplyButton,UndoButton
-import traitsui
-from numpy.random import random
-
-from time import sleep
 from traits.api import *
-from matplotlib.widgets import Button
-import matplotlib.animation as animation
+
 import math
 import sys, string, os, platform
-sys.setrecursionlimit(1500)
+from shutil import copyfile
 
-import matplotlib.image as mpimg
+import matplotlib.image as image
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Button,Cursor
+from matplotlib.figure import Figure
+from matplotlib.patches import Polygon
+import matplotlib
+
 import webbrowser # for web links
 plt.ioff()
-##importing plot library
+sys.setrecursionlimit(1500)
+######################################################
+### importing custom made libraries for the GUI
 import plot_lib
-## importing edit library
 import edit_body as edit
 import shape_sum as shape_sum
 import shape_substract as shape_substract
 import shape_split as shape_split
 import envelop_maker as envelop_maker
 import time
-from shutil import copyfile
-
-import matplotlib
-#matplotlib.use('WxAgg')
-
-#matplotlib.rcParams['font.sans-serif'] = "Comic Sans MS"
-#matplotlib.rcParams['font.family'] = "AppleGothic"
 
 
 
 #################################################################################
-
-
+#### This a class where matplotlib is embemded with plotting area, functions relate to
+#### to the GUI. 
 class Canvas(HasTraits,object):
     #####################3##########################################################
     #### model setup
@@ -1537,6 +1519,10 @@ class Canvas(HasTraits,object):
                 self.l[-1],self.b[-1]=poly_2.exterior.coords.xy
                 
                 '''
+                #### This a general algrithem code to merge any body anywhere in the model
+                ## and they need not be consecutive bodies. 
+                ## It works perfect for the the neighboubering bodies and to some extent on 
+                ## some non-neighbouring bodies. But not perfect
                 #self.x_envelope[j][i]
                 #for k in range(i,len(self.l)):
                 #                poly.append(Shape( [(self.l[k][j],self.b[k][j]) for j in range(len(self.l[k])) ]))
@@ -1560,6 +1546,8 @@ class Canvas(HasTraits,object):
                 self.l[self.merge_body_no]=xa
                 self.b[self.merge_body_no]=ya
                 '''
+            elif self.ans=='no':
+                pass
             else:
                 print("Enered body number not  is valid.")
                 self.configure_traits(view='plot_output_view') 
@@ -2172,7 +2160,7 @@ class Canvas(HasTraits,object):
                 st_index=[]
                 end_index=[]
                 # converting the polygon to ring to find the nearest point on master body
-                pol_ext = LinearRing(self.shape.exterior.coords)
+                pol_ext = shapely.geometry.LinearRing(self.shape.exterior.coords)
                 ###################################################################################33
                 ############fixing problem start point
                 print ("Working on Body number")
