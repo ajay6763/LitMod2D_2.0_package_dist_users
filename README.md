@@ -7,30 +7,6 @@ LitMod2D_2.0 is a tool  to unravel the thermal, compositional, density, and seis
 
 
 #### Dependency
-* Python2.7 -- mainly for Graphic user interface
-	- matplotlib==2.0.0
-	-  numpy==1.12.1
-	- pandas==0.23.4
-	- Pillow==5.1.0
-	- pluggy==0.8.0
-	 - properties==0.4.0
-	- py==1.7.0
-	- pyface==4.5.0
-	- Pygments==2.2.0
-	- pypng==0.0.18
-	- python-dateutil==2.7.5
-	- python-openid==2.2.5
-	- pytz==2018.7
-	- pyxdg==0.25
-	- scipy==1.1.0
-	- scour==0.36
-	- seaborn==0.9.0
-	- Shapely==1.6.4
-	- steno3d==0.3.9
-	- traits==4.5.0
-	- traitsui==4.5.1
-	- vtk==8.1.2 
-	- python-tk
-	- PyQt4
+* Python2.7 
 * gfortran
 * wine [https://www.winehq.org/](https://www.winehq.org/)
