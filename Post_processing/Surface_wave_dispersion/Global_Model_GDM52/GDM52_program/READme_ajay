@@ -1,0 +1,5 @@
+Run following command to compile GDM52
+
+gfortran GDM52_dispersion.for -ffixed-line-length-132 -o GDM52_dispersion
+
+sample2.s calculates Rayleigh wave dispersion for a path (Fig. 19)

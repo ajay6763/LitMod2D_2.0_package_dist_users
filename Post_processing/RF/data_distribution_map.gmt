@@ -1,0 +1,85 @@
+#!/bin/bash
+
+
+small_circle()
+{
+cat /dev/null > /tmp/pole_temp.${USER}
+plo=$1
+pla=$2
+ang_radius=$3
+az_step=1
+nstep=`echo "${az_step}" | awk '{ printf("%d",360/$1 + 1) }'`
+az=0
+step=0
+echo ${nstep} ${az_step} ${ang_radius} | awk '{ for (i=1 ; i<=$1; i++) { az=i*$2 ; print az,90-$3 }}' > /tmp/pole_temp.${USER}
+project -T${plo}/${pla} -C0/-90 -Fpq <<END > /tmp/pole_rot.$USER
+0 90
+0 0
+END
+tlo=`awk 'NR == 1 { print $1 }' /tmp/pole_rot.$USER`
+tla=`awk 'NR == 1 { print $2 }' /tmp/pole_rot.$USER`
+clo=`awk 'NR == 2 { print $1 }' /tmp/pole_rot.$USER`
+cla=`awk 'NR == 2 { print $2 }' /tmp/pole_rot.$USER`
+EorW=`echo ${plo} | awk '{ if ($1<0) print "W" ; else print "E" }'`
+NorS=`echo ${pla} | awk '{ if ($1<0) print "S" ; else print "N" }'`
+project -T${tlo}/${tla} -C${clo}/${cla} -Fpq /tmp/pole_temp.$USER > small_circle_${ang_radius}deg.xy
+} # end of function's definition
+#=======================================================================
+# making the map
+#=======================================================================
+
+echo "making map..."
+
+echo "Enter Receiver station lat :"
+#read r_lat;
+r_lat=17.410;
+echo "Enter Receiver station long :"
+#read r_long;
+r_long=78.550;
+eventfile=HYB_event.txt
+gmtset PAPER_MEDIA = a4+
+
+bounds="0/360/-90/90"
+ticks="a10f10"
+#origin:
+	xshift="5.85c"
+	yshift="1.5c"
+projection="A${r_long}/${r_lat}/16c"
+portrait=""	# set this to be blank for the default landscape mode
+verbose="-V"	# set this to be blank to suppress output
+
+# coastline and border information --- see pscoast manpage for details
+coastline="0.25p/0/0/0"
+resolution="i"	# choose from (f)ull, (h)igh, (i)ntermediate,
+#		# (l)ow, and (c)rude
+borders="-N1/0.25p/128/128/128"
+
+# output file
+psfile="distribution.eps"
+
+# make a basemap (blank b/g) and plot coastlines
+psbasemap -B${ticks} -J${projection} -R${bounds} -X${xshift} -Y${yshift} ${portrait} ${verbose} -K > ${psfile}
+
+pscoast -B${ticks} -J${projection} -R${bounds} ${portrait} ${verbose} -D${resolution} -W${coastline} ${borders} -G215 -S255 -O -K >> ${psfile}
+
+small_circle ${r_long} ${r_lat} 25
+small_circle ${r_long} ${r_lat} 89
+
+psxy small_circle_25deg.xy -J${projection} -R${bounds} -W3p/55/55/255 -M -N -O -K >> ${psfile}
+psxy small_circle_89deg.xy -J${projection} -R${bounds} -W3p/55/55/255 -M -N -O -K >> ${psfile}
+
+# plot and label the stations (plus rays) with NO MULTIPLE SEISMOGRAMS IN LIGHT RED
+ ## location of IMD stations in INDIA.
+psxy -O -K -J$projection -R${bounds} -St0.45c -W2.5 -G255/0/0 << eof >> ${psfile}
+$r_long $r_lat
+eof
+pstext -R -J -D-0/0 -O -K  -Dj50/50  << stopit >> ${psfile}
+$r_long $r_lat 10 0 4 CM HYB
+stopit
+
+tail -n +2 ${eventfile} | awk '{ print $9, $8}' | psxy -O -K -J$projection -R${bounds} -Sc0.1c -W2 -G255/0/0 -P >>${psfile}
+psxy -J${projection} -R${bounds} -O < /dev/null >> ${psfile}
+
+# plotting the map
+gv ${psfile} --scale=0 --orientation=LANDSCAPE 
+rm small_circle*	

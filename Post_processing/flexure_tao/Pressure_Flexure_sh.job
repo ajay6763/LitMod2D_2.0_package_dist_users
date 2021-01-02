@@ -1,0 +1,110 @@
+#!/bin/bash
+
+### Pressure variations => Flexure
+###  OJO   Pressure output is considering the sublithospheric anomalies.
+###   Usually you want the Pressure without sublithospheric anomalies, uncoupled elevation. 
+gmtset LABEL_FONT_SIZE 15p
+gmtset ANOT_FONT_SIZE 15p
+gmtset FRAME_PEN 0.5p
+gmtset HEADER_FONT 29
+gmtset HEADER_FONT_SIZE 15
+
+file_root=columns_
+fileps=Pressure_Flexure.ps
+file_data=topo.inp
+file_topoCalc=topo_out.dat
+cp $LitModHOME/Post_processing/flexure_tao/bu_variaTe.PRM ./variaTe.PRM
+file_variaTe=./variaTe.PRM
+
+###echo '#x[km],  Pressure [MPa] ' > $file_out_P
+
+echo "Enter length of the profile (in km):"
+read xmax
+xmin=0
+#xmax=625
+echo "Enter along length resolution of the profile(in km):"
+read dx
+#dx=5
+zmin=-20
+Compensation_Depth=-400		# Vertigal discretitzation is not regular => It is not working at different depths
+
+
+
+#### 
+
+Rdist=$xmin/$xmax
+size=16/4
+
+awk '{if ($2==Compensation_Depth) print $1,$4}' Compensation_Depth=$Compensation_Depth  P_T_out.dat > file_Pressure_Depth.tmp
+mean_press=`awk '(NR>1 && $1<950){mp+=$2; n++}END{print mp/n}' file_Pressure_Depth.tmp`
+echo Mean Pressure: $mean_press MPavariaTe.PRM
+
+#Ajusta con 7773 MPa
+awk -v xmin=$xmin -v xmax=$xmax -v dx=$dx -v mp=$mean_press\
+	'BEGIN{print (xmin-dx)*1e3, 0} {print $1*1e3, -($2-mp)*1e6} END{print (xmax+dx)*1e3, 0}' \
+	file_Pressure_Depth.tmp > file_tao.in.tmp
+
+#PRESSURE & DEFLECTION
+#Pressure
+awk '(NR>1){print $1/1e3, $2/1e6}' file_tao.in.tmp | \
+	psxy -Y16 -JX$size -R$Rdist/$zmin\0/200 -W4 \
+		-Ba100f20g100:"distance (km)":/a50f10g2000:"@~D@~ pressure at compensation depth km [MPa] - black":nSW \
+		-P -K > $fileps
+
+#	psxy -Y16 -JX$size -R$Rdist/$zmin\0/200 -W4 \
+#		-Ba100f50g100:"distance (km)":/a50f10g2000:"@~D@~ pressure at compensation depth km [MPa] - black":nSW \
+#		-P -K > $fileps
+
+
+#DEFLECTION
+## TE CONSTANT
+cp $file_variaTe variaTeA.PRM
+awk '{if ($1!="#") print $1*1e3,$2}' $file_data > variaTeA.ZINI
+cat <<END> variaTeA.EET
+	110e3	10e3
+	120e3	10e3
+	1000e3	10e3
+END
+
+psbasemap -JX -R$Rdist/$zmin\00/2000 -B/a500f100g1000:"deflection [m] - green":E -O -K >> $fileps
+awk 'BEGIN{print "time 0"; print "density 2800"; print "hidden 1"}{print $1,-$2/9.8/2800}' file_tao.in.tmp > variaTeA1.UNIT
+tao variaTeA 
+psxy variaTeA.xzt -JX$size -R$Rdist/$zmin\00/2000 -W4/0/150/0 -B -O -K >> $fileps
+
+
+
+## TE VARIA AL LLARG DEL PERFIL
+cp $file_variaTe variaTeB.PRM
+cp variaTeA.ZINI variaTeB.ZINI
+cat <<END> variaTeB.EET
+	300e3	20e3
+	1300e3	20e3
+END
+cp variaTeA1.UNIT variaTeB1.UNIT
+tao variaTeB 
+psxy variaTeB.xzt -JX$size -R$Rdist/$zmin\00/2000 -W4/0/150/0ta -B -O -K >> $fileps
+## fi - Te varia al llarg del perfil
+
+#awk '(NR>1){print $1/1e3, $2/1e6}' file_tao.in.tmp | psxy -JX -R$Rdiset size = 16/8 st/$zmin\0/200 -W3 -O -K >> $fileps
+
+
+#TOPOGRAPHY CORRECTED BY (REGIONAL) ISOSTASY
+
+awk '{print $1,$3}' $file_topoCalc > file_uncouple.tmp
+psxy $file_topoCalc -Y-10 -JX -R$Rdist/-5500/4000 -W1/0/0/255 -Ba100f20g100/a1000f500g500:"topography [m]":WNSE -O -K >> $fileps
+psxy file_uncouple.tmp -JX -R -W2/255/0/0ta   -O -K >> $fileps
+awk '{print $1,$3}' variaTeA.xzt > file_A.tmp
+psxy file_A.tmp -JX -R -W4/0/150/0   -O -K >> $fileps
+awk '{print $1,$3}' variaTeB.xzt > file_B.tmp
+psxy file_B.tmp -JX -R -W4/0/150/0ta -O -K >> $fileps
+
+psxy variaTeA.pfl -JX -R -W4/0/150/0   -O -K >> $fileps
+psxy variaTeB.pfl -JX -R -W4/0/150/0ta -O -K >> $fileps
+cp variaTeA.pfl flexuretopotao_TeA.dat
+cp variaTeB.pfl flexuretopotao_TeB.dat
+cp variaTeA.xzt Deflexiotopotao_TeA.dat
+cp variaTeB.xzt Deflexiotopotao_TeB.dat
+psxy $file_data -JX -R -W4/0 -O >> $fileps
+
+rm tmp.*.tmp file_*.tmp variaTe*
+evince $fileps &

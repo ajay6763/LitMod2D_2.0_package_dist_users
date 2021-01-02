@@ -12,7 +12,6 @@ from matplotlib import gridspec
 from pylab import *
 import math
 #import seaborn as sns
-import scipy
 
 cwd = os.getcwd()
 
@@ -184,6 +183,20 @@ data=np.column_stack((y[0,:],x[0,:],t[0,:]))
 l1_Cpx,l2_Cpx,T_Cpx=zip(*sorted(zip(data[:,0],data[:,1],data[:,2])))
 
 
+### Pyroxene
+d_C2c= find_mineral('C2c',mat_list,prop)
+d=[]
+x=[]
+y=[]
+t=[]
+data=[]
+d=np.where(d_C2c[:,0]==dist)
+y=d_C2c[d[:],1]
+x=d_C2c[d[:],2]
+t=d_C2c[d[:],3]
+data=np.column_stack((y[0,:],x[0,:],t[0,:]))
+l1_C2c,l2_C2c_t,T_C2c=zip(*sorted(zip(data[:,0],data[:,1],data[:,2])))
+l2_C2c= tuple(np.zeros(len(l2_Cpx)-len(l2_C2c_t)))+l2_C2c_t 
 
 ### Plagioclase
 d_Ph= find_mineral('Ph',mat_list,prop)
@@ -214,26 +227,30 @@ print t
 data=np.column_stack((y[0,:],x[0,:],t[0,:]))
 l1_Sp,l2_Sp,T_Sp=zip(*sorted(zip(data[:,0],data[:,1],data[:,2])))
 print T_Sp
-l2_Sp= l2_Sp+ tuple(np.zeros(len(l2_Cpx)-len(l2_Sp)))
+l2_Sp= l2_Sp+ tuple(np.zeros(len(l2_Ph)-len(l2_Sp)))
 print len(l2_Sp),len(l2_Ph),len(l2_Cpx)
+
 #####################3
 ########## Put all together
-mineral=np.column_stack((l2_Ol,l2_Gt,l2_Opx,l2_Cpx,l2_Sp,l2_Ph))
-'''
+mineral=np.column_stack((l2_Ol,l2_Gt,l2_Opx,l2_Cpx,l2_Ph,l2_Sp))
+#mineral=np.column_stack((l2_Ol,l2_Gt,l2_Opx,l2_Cpx))
+
+
 #mineral = [i/sum(raw) for i in raw]
 ###############
 ### normalize
-for i in range(len(mineral)):
-	mineral[i,:] = [j/sum(mineral[i,:]) for j in mineral[i,:]]
-mineral=mineral*100
+#for i in range(len(mineral)):
+#	mineral[i,:] = [j/sum(mineral[i,:]) for j in mineral[i,:]]
+#mineral=mineral*100
 #print mineral[:,0]
 #print mineral[:,-1]
 #print len(mineral)
-'''
+
 fig  = plt.figure(figsize=(10,6))
 ax1 = fig.add_subplot(111)
 
 #d_Ol[np.lexsort(np.fliplr(d_Ol).T)]
+
 
 ########################
 ### Olivine
@@ -269,22 +286,27 @@ cum_x_Cpx=mineral[:,0]+mineral[:,1]+mineral[:,2]+mineral[:,3]
 ax1.plot(l1_Cpx,cum_x_Cpx,color='black') #,label='Clinopyroxene')#,linestyle='--',color='black',label='500km Anomaly')
 ax1.fill_between(l1_Cpx,cum_x_Cpx,cum_x_Opx,label='Clinopyroxene',color='darkgreen')
 
-
-
 ########################
-### Spinel
-#cum_x_Sp=[x + y for x, y in zip(cum_x_Ph, l2_Sp)]
-cum_x_Sp=mineral[:,0]+mineral[:,1]+mineral[:,2]+mineral[:,3]+mineral[:,4]
-ax1.plot(l1_Cpx,cum_x_Sp,color='black')#label='Spinel')#,linestyle='--',color='black',label='500km Anomaly')
-ax1.fill_between(l1_Cpx,cum_x_Sp,cum_x_Cpx,label='Spinel',color='red')
+### Pyroxene
+#cum_x_C2c=mineral[:,0]+mineral[:,1]+mineral[:,2]+mineral[:,3]+mineral[:,4]
+#ax1.plot(l1_Cpx,cum_x_C2c,color='black')#label='Spinel')#,linestyle='--',color='black',label='500km Anomaly')
+#ax1.fill_between(l1_Cpx,cum_x_C2c,cum_x_Cpx,label='Pyroxene',color='white')
 
 
 ########################
 ### Plagioclase
 #cum_x_Ph=[x + y for x, y in zip(cum_x_Cpx, l2_Ph)]
-cum_x_Ph=mineral[:,0]+mineral[:,1]+mineral[:,2]+mineral[:,3]+mineral[:,4]+mineral[:,5]
+cum_x_Ph=mineral[:,0]+mineral[:,1]+mineral[:,2]+mineral[:,3]+mineral[:,4]
 ax1.plot(l1_Cpx,cum_x_Ph,color='black')#label='Spinel')#,linestyle='--',color='black',label='500km Anomaly')
-ax1.fill_between(l1_Cpx,cum_x_Ph,cum_x_Sp,label='Plagioclase',color='grey',alpha=0.4)
+ax1.fill_between(l1_Cpx,cum_x_Ph,cum_x_Cpx,label='Plagioclase',color='orange',alpha=0.4)
+
+
+########################
+### Spinel
+#cum_x_Sp=[x + y for x, y in zip(cum_x_Ph, l2_Sp)]
+cum_x_Sp=mineral[:,0]+mineral[:,1]+mineral[:,2]+mineral[:,3]+mineral[:,4]+mineral[:,5]
+ax1.plot(l1_Cpx,cum_x_Sp,color='black')#label='Spinel')#,linestyle='--',color='black',label='500km Anomaly')
+ax1.fill_between(l1_Cpx,cum_x_Sp,cum_x_Ph,label='Spinel',color='red')
 
 
 
@@ -293,10 +315,6 @@ ax1.fill_between(l1_Cpx,cum_x_Ph,cum_x_Sp,label='Plagioclase',color='grey',alpha
 #ax1.plot(d_Gt[d[:],2],d_Gt[d[:],1],'*')#,linestyle='--',color='black',label='500km Anomaly')
 #ax1.plot(d_Opx[d[:],2],d_Opx[d[:],1],'*')#,linestyle='--',color='black',label='500km Anomaly')
 #ax1.invert_xaxis()
-ax1.axhline(y=100,linestyle='dotted',color='black',linewidth=1)
-ax1.grid(True,linestyle='dotted',color='black',linewidth=0.1)
-plt.legend( fancybox=True,shadow=False, framealpha=1,loc='upper right',fontsize=legend_font_size)
-
 '''
 ind=np.where(post_data[:,0]==dist)
 #ax2.plot([0,300,400],[0,500,1000],'r-')
@@ -318,18 +336,26 @@ ax2.set_ylabel('Temperature $(^oC)$' ,fontsize=axes_label_font_size, fontweight=
 plt.yticks(color='blue')
 '''
 #ax1.invert_xaxis()
-ax1.set_title('Distance =' + str(dist) + ' km',fontsize=axes_label_font_size, fontweight='bold')
+ax1.set_title('HP_AF Distance =' + str(dist) + ' km',fontsize=axes_label_font_size, fontweight='bold')
 ax1.set_ylabel(str(title_save[prop-1]),fontsize=axes_label_font_size, fontweight='bold')
 ax1.set_xlabel('Depth (km)',fontsize=axes_label_font_size, fontweight='bold')
+ax1.axhline(y=100,linestyle='dotted',color='black',linewidth=1)
+ax1.grid(True,linestyle='dotted',color='black',linewidth=0.1)
 plt.xticks(fontsize=axes_label_font_size)
 plt.yticks(fontsize=axes_label_font_size)
-#plt.ylim([0,100])
-plt.xlim([min(l1_Ol),400])
+plt.ylim([0,110])
 ax1.invert_yaxis()
-
+axtemp = ax1.twinx()
+T=tuple(post_data[np.where(post_data[:,0]==dist),2][0,:])
+D=tuple(-post_data[np.where(post_data[:,0]==dist),1][0,:])
+axtemp.plot(D,T,color='red',linewidth=2)
+axtemp.tick_params(axis='y', labelcolor='red')
+axtemp.set_ylabel('T ($^oC$)',color='red',fontsize=axes_label_font_size, fontweight='bold')
+plt.xlim([min(l1_Ol),400])
+ax1.legend( fancybox=True,shadow=False, facecolor='grey',framealpha=1,loc='best',fontsize=legend_font_size)
 
 #plt.tight_layout(pad=1.2, w_pad=1.2, h_pad=2.0)
-s=(str(cwd+ '/' + str(title_save[prop-1]) + str(dist) + 'km_plot.jpg'))
+s=(str(cwd+ '/' + str(title_save[prop-1]) + str(dist) + 'km_plot.png'))
 savefig(s, dpi=400) 
 #plt.tight_layout()
 

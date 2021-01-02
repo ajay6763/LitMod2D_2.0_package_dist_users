@@ -18,14 +18,14 @@
 #####  automate it -> @ajay6763					#####
 #####################################################################
 #####################################################################
+#source=$HOME/owncloud/PHD/LitMod_Methodology/LitMod2D_all_development/LitMod2D_2.0_package_dist_users/Post_processing
+#$LitModHOME/Post_processing/Surface_wave_dispersion
 
-
-#####################################################################
-### getting path of Postprocessing in LitMod2D_2.0 package
-source=$LitModHOME/Post_processing/Surface_wave_dispersion
-cp $source/modl.d ./
-cp $source/sobs.d ./
-cp $source/disp.d ./
+####################################################################
+###copy default disperions and model files
+cp $LitModHOME/Post_processing/Surface_wave_dispersion/modl.d ./
+cp $LitModHOME/Post_processing/Surface_wave_dispersion/sobs.d ./
+cp $LitModHOME/Post_processing/Surface_wave_dispersion/disp.d ./
 
 
 #####################################################################
@@ -65,7 +65,7 @@ else
 #####################################################################
 ### If Observed dispersion doesn not exist than using dispersion curve
 ### for PREM model as observed (from GDM52 Ekstrome) 
-    cp $source/PREM_${surf_type}_${disp_type}_SURF96.inp ./    
+    cp $LitModHOME/Post_processing/Surface_wave_dispersion/disp_${surf_type}_${disp_type}.d ./disp.d    
 fi
 #####################################################################
 ### Now calculating the dispersion curve

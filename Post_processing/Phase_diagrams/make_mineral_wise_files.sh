@@ -8,7 +8,7 @@
 #####  automate it -> @ajay6763					#####
 #####################################################################
 #####################################################################
-
+#Name              T(K)         P(bar)      V,J/bar        H,J         gamma T      Ks,bar       Gs,bar      v0,km/s      vp,km/s      vs,km/s       vp/vs      rho,kg/m3      unused       cp,J/#K     alpha,1/K    beta,1/bar     S,J/K        n,mol         N,g       Ks_T,bar/K   Gs_T,bar/K      Ks_P         Gs_P         v0_T         vp_T         vs_T         v0_P         vp_P         #vs_P         wt %        vol %        mol %           SIO2         AL2O3        FEO          MGO          CAO          NA2O 
 if [ -d "./Phase_diagrams" ]; then
   ### Take action if $DIR exists ###
   echo
@@ -60,34 +60,50 @@ echo "Min T = " $T_min " Max T= " $T_max
 #T P Vp Vs Vp/Vs density wt% vol%
 echo ""
 echo "Searching for your Plagioclase ......"
-grep 'Pl(h)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$32,$33,$34}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}'|awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1<= max) print $0}' > ./Phase_diagrams/Ph_"$i"_FULL.txt
+grep 'Pl(h)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$31,$32,$33}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}'|awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1<= max) print $0}' > ./Phase_diagrams/Ph_"$i"_FULL.txt
 
 
 echo ""
 echo "Searching for your Spinel ......"
-grep 'Sp(HP)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$32,$33,$34}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}'|awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1<= max) print $0}' > ./Phase_diagrams/Sp_"$i"_FULL.txt
+grep 'Sp(HP)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$31,$32,$33}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}'|awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1<= max) print $0}' > ./Phase_diagrams/Sp_"$i"_FULL.txt
 
 
 
 echo ""
 echo "Searching for your Garnet ......"
-grep 'Gt(stx8)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$32,$33,$34}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}' |awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1 <= max) print $0}'> ./Phase_diagrams/Gt_"$i"_FULL.txt
+grep 'Gt(stx8)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$31,$32,$33}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}' |awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1 <= max) print $0}'> ./Phase_diagrams/Gt_"$i"_FULL.txt
 
 
 echo ""
 echo "Searching for your Orthopyroxene ......"
-grep 'Opx(HP)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$32,$33,$34}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}' |awk -v  min="$T_min" -v max="$T_max"  '{if($1 >= min && $1<= max) print $0}' > ./Phase_diagrams/Opx_"$i"_FULL.txt
+grep 'Opx(HP)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$31,$32,$33}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}' |awk -v  min="$T_min" -v max="$T_max"  '{if($1 >= min && $1<= max) print $0}' > ./Phase_diagrams/Opx_"$i"_FULL.txt
 
 
 echo ""
 echo "Searching for your Clinopyroxene ......"
-grep 'Cpx(HP)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$32,$33,$34}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}' |awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1<= max) print $0}'> ./Phase_diagrams/Cpx_"$i"_FULL.txt
+grep 'Cpx(HP)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$31,$32,$33}'| awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}' |awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1<= max) print $0}'> ./Phase_diagrams/Cpx_"$i"_FULL.txt
 
 echo ""
 echo "Searching for your Olivine ......"
 
 echo $i"_FULL"
-grep 'O(HP)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$32,$33,$34}'|awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}'|awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1<= max) print $0}'  > ./Phase_diagrams/Ol_"$i"_FULL.txt
+grep 'O(HP)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$31,$32,$33}'|awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}'|awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1<= max) print $0}'  > ./Phase_diagrams/Ol_"$i"_FULL.txt
+
+
+
+echo ""
+echo "Searching for your C2/c(stx) ......"
+
+
+echo $i"_FULL"
+grep 'C2_c(jca)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$31,$32,$33}'|awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}'|awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1<= max) print $0}'  > ./Phase_diagrams/C2c_"$i"_FULL.txt
+
+echo ""
+echo "Searching for your Wadselyte ......"
+
+
+echo $i"_FULL"
+grep 'Wad(stx8)' $i"_FULL"|awk '{print $2-273.15,$3*100000,$10,$11,$12,$13,$31,$32,$33}'|awk -v  min="$P_min" -v max="$P_max" '{if($2 >= min && $2<= max) print $0}'|awk -v  min="$T_min" -v max="$T_max" '{if($1 >= min && $1<= max) print $0}'  > ./Phase_diagrams/Wad_"$i"_FULL.txt
 
 
 

@@ -1,19 +1,8 @@
 #### ploting liberary
-import matplotlib as plt
-from matplotlib.patches import Polygon
-import matplotlib.patches as mpatches
-import numpy as np
-import matplotlib as mpl
-from traits.api import HasTraits, Str, Int, Float, Enum, Array, File, Directory
-from traitsui.api import View, Item, Group, HSplit, Handler 
-from traitsui.menu import OKButton, CancelButton, ApplyButton,UndoButton
-import traitsui
-import os
-from matplotlib.widgets import MultiCursor
-from matplotlib import style
 import matplotlib.pyplot as plt
-from matplotlib import gridspec
-
+from matplotlib.patches import Polygon
+import numpy as np
+import os
 origin='lower'
 label_size = 12
 marker_size =2
@@ -31,16 +20,16 @@ dist=[30,60,80,95]
 
 for i in range(len(dist)):
 
-	s=str(str(dist[i])+".xyz")
+	s=str(str(dist[i])+"km.xyz")
 	data=np.loadtxt(s)
 	#data[:,1]=data[:,1]/max(data[:,1])
-	ax_ray.stackplot(data[101::,1]+i,-data[101::,0],labels=str(dist[i]*1000))
+	ax_ray.stackplot(data[101::,1]+i,data[101::,0],labels=str(dist[i]*1000))
 ax_ray.grid(True)
 #ax_ray.invert_yaxis()
 #plt.gca().invert_yaxis()
 ax_ray.grid(True,linestyle='--',color='black',linewidth=0.15)
 
-plt.ylim(-40,-5)
+#plt.ylim(-40,0)
 plt.xticks(fontsize=axes_label_font_size)
 plt.yticks(fontsize=axes_label_font_size)
 plt.xlabel('RF apmlitude',fontsize=axes_label_font_size, fontweight='bold')

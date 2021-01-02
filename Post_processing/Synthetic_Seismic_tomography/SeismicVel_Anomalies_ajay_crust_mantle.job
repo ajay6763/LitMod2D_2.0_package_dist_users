@@ -78,7 +78,7 @@ echo "	2- Use a column from the model as a reference"
 read OptRefCol
 if [ $OptRefCol -eq 1 ]
 then
-   RefModel=$LitModHOME/Post_processing/Synthetic_Seismic_tomography/LitMod2D_Ref_Model_for_Syn_tomo.dat
+   RefModel=$HOME/owncloud/PHD/LitMod_Methodology/LitMod2D_all_development/LitMod2D_2.0_package_dist_users/Post_processing/Synthetic_Seismic_tomography/LitMod2D_Ref_Model_for_Syn_tomo.dat
    cat $RefModel|awk '{print $1,$3}'>t_P
    RefVp=t_P
    cat $RefModel|awk '{print $1,$4}'>t_S

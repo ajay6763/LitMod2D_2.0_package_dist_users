@@ -8,12 +8,12 @@ gmtset ANOT_FONT_SIZE 15p
 gmtset FRAME_PEN 0.5p
 gmtset HEADER_FONT 29
 gmtset HEADER_FONT_SIZE 15
-
+echo $LitModHOME
 set file_root = columns_
 set fileps = Pressure_Flexure.ps
 set file_data = topo.inp
 set file_topoCalc = topo_out.dat
-cp /home/akumar/owncloud/PHD/LITMOD_package_Linux_dist/flexure_tao/bu_variaTe.PRM ./variaTe.PRM
+cp $LitModHOME/Post_processing/flexure_tao/bu_variaTe.PRM ./variaTe.PRM
 set file_variaTe = ./variaTe.PRM
 
 ###echo '#x[km],  Pressure [MPa] ' > $file_out_P
@@ -21,7 +21,7 @@ set file_variaTe = ./variaTe.PRM
 #### 
 #### Algerian
 set xmin = 0
-set xmax = 625
+set xmax = 855
 set dx = 5
 set zmin = -20
 set Compensation_Depth = -400		# Vertigal discretitzation is not regular => It is not working at different depths
@@ -75,8 +75,8 @@ psxy variaTeA.xzt -JX$size -R$Rdist/$zmin\00/2000 -W4/0/150/0 -B -O -K >> $filep
 cp $file_variaTe variaTeB.PRM
 cp variaTeA.ZINI variaTeB.ZINI
 cat <<END> variaTeB.EET
-	300e3	20e3
-	1300e3	20e3
+	300e3	30e3
+	1300e3	30e3
 END
 cp variaTeA1.UNIT variaTeB1.UNIT
 tao variaTeB 
@@ -104,5 +104,5 @@ cp variaTeA.xzt Deflexiotopotao_TeA.dat
 cp variaTeB.xzt Deflexiotopotao_TeB.dat
 psxy $file_data -JX -R -W4/0 -O >> $fileps
 
-rm tmp.*.tmp file_*.tmp variaTe*
+#rm tmp.*.tmp file_*.tmp variaTe*
 evince $fileps &

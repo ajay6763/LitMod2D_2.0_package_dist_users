@@ -1,0 +1,23 @@
+CALCULATING P-wave RECEIVER FUNCTIONS:
+=======================================
+
+1. put_t0_timemark.sh*
+
+2. RF_cut_45_and_FILTER.sh* (Cut +/- 45s with option of filter 1-20s)
+
+3. Iterdecon_all_20sampl.sh*
+
+4. For getting the best eqrs create the following directory structure:
+	Gaussian_2.5_filter_eqr_eqt_STA\
+ 			|--> eqr_2.5_filtered\ 
+ 			|--> eqt_2.5_filtered\ 
+ 			|--> best_eqr_eqt_2.5_filtered\
+
+Copy all the eqr and eqt files in the first two directories: 
+cp ../../201*/Iter*/*2.5*eqr .
+cp ../../201*/Iter*/*2.5*eqt .
+
+Run the following script in eqr_2.5_filtered\ to select the best eqrs
+./best_eqr_selection_auto-or-manual.sh*
+
+

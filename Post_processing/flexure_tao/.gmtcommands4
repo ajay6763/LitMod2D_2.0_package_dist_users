@@ -1,0 +1,15 @@
+# GMT common arguments shelf
+-Ba100f20g100/a1000f500g500:topography [m]:WNSE
+-JX16/4
+-R0/855/-5500/4000
+-Y16
+-y-10
+-jX16/4
+EOF
+
+-JX16/4
+-R0/855/-200/200
+-Y16
+-y-10
+-jX16/4
+EOF

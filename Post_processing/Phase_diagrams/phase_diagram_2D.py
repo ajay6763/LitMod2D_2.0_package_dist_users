@@ -3,18 +3,12 @@ import matplotlib as plt
 from matplotlib.patches import Polygon
 import matplotlib.patches as mpatches
 import numpy as np
-import matplotlib as mpl
-from traits.api import HasTraits, Str, Int, Float, Enum, Array, File, Directory
-from traitsui.api import View, Item, Group, HSplit, Handler 
-from traitsui.menu import OKButton, CancelButton, ApplyButton,UndoButton
-import traitsui
 import os
 from matplotlib.widgets import MultiCursor
 from matplotlib import style
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from pylab import *
-import seaborn as sns
 import math
 cwd = os.getcwd()
 
@@ -99,11 +93,11 @@ def find_mineral(mineral,mat_list,d):
 	return d.T
 ##############################
 ##### Main
-prop=input('Enter what property you want to plot: \n 1- P-wave velocities \n 2- S-wave velocities \n 3- Vp/Vs \n 4- Density \n 5- Weight % \n 6- Volume % \n  ')
+prop=input('Enter what property you want to plot: \n 1- P-wave velocities \n 2- S-wave velocities \n 3- Vp/Vs \n 4- Density \n 5- Weight % \n 6- Volume % \n 7- mole % \n  ')
 
-title= ['Vp(km/s)','Vs(km/s)','Vp/Vs','Density(kg/m3)','wt%','vol%']
+title= ['Vp(km/s)','Vs(km/s)','Vp/Vs','Density(kg/m3)','wt%','vol%','mole%']
 
-title_save= ['Vp','Vs','Vp_Vs','Density','wt%','vol%']
+title_save= ['Vp','Vs','Vp_Vs','Density','wt%','vol%','mole%']
 mat_list =input('Enter Composition files code (e.g 90,99 etc) in sequence separated by comma:' )
 
 d=[]
@@ -117,7 +111,7 @@ f.close()
 fig  = plt.figure(figsize=(25,14))
 #fig2  = plt.figure(figsize=(25,14))
 
-ax1 = fig.add_subplot(321)
+ax1 = fig.add_subplot(421)
 #ax1_ = fig2.add_subplot(321)
 #ax1 = plt.subplot(321)
 size=np.divide(d[:,2],max(d[:,2]))
@@ -126,7 +120,7 @@ symbol='s'
 symbol_edge_color='None'
 symbol_edge_line=0.1
 cm = plt.cm.get_cmap('Purples')
-sc = ax1.scatter(d[:,0], d[:,1], c=d[:,2], vmin=min(d[:,2]), vmax=max(d[:,2]), s=size, cmap=cm,marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
+sc = ax1.scatter(d[:,0], d[:,1], c=d[:,2],vmin=min(d[:,2]), vmax=max(d[:,2]), s=size, cmap='Spectral',marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
 cbar=plt.colorbar(sc)
 cbar.ax.set_title(title[prop-1])
 ax1.set_title('Olivine')
@@ -135,7 +129,7 @@ ax1.set_ylabel('Depth (km)')
 ax1.invert_yaxis()
 '''
 cm_ = plt.cm.get_cmap('Purples')
-sc_ = ax1_.scatter(d[:,0], d[:,1], c=d[:,3], vmin=min(d[:,3]), vmax=max(d[:,3]), s=size, cmap=cm_,marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
+sc_ = ax1_.scatter(d[:,0], d[:,1], c=d[:,3], vmin=min(d[:,3]), vmax=max(d[:,3]), s=size, cmap='Spectral'_,marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
 cbar_=plt.colorbar(sc_)
 cbar_.ax.set_title(title[prop-1])
 ax1_.set_title('Olivine')
@@ -158,9 +152,9 @@ for i in range(len(d)):
 f.close()
 
 #ax2 = plt.subplot(322)
-ax2 = fig.add_subplot(322)
+ax2 = fig.add_subplot(422)
 #size=np.divide(Ol*10,max(Ol))
-sc = ax2.scatter(d[:,0], d[:,1], c=d[:,2], vmin=min(d[:,2]), vmax=max(d[:,2]), s=size, cmap=cm,marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
+sc = ax2.scatter(d[:,0], d[:,1], c=d[:,2],vmin=min(d[:,2]), vmax=max(d[:,2]), s=size, cmap='Spectral',marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
 cbar=plt.colorbar(sc)
 cbar.ax.set_title(title[prop-1])
 ax2.set_title('Garnet')
@@ -180,9 +174,9 @@ for i in range(len(d)):
 f.close()
 
 #ax3 = plt.subplot(323)
-ax3 = fig.add_subplot(323)
+ax3 = fig.add_subplot(423)
 #size=np.divide(Ol*10,max(Ol))
-sc = ax3.scatter(d[:,0], d[:,1], c=d[:,2], vmin=min(d[:,2]), vmax=max(d[:,2]), s=size, cmap=cm,marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
+sc = ax3.scatter(d[:,0], d[:,1], c=d[:,2],vmin=min(d[:,2]), vmax=max(d[:,2]), s=size, cmap='Spectral',marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
 cbar=plt.colorbar(sc)
 cbar.ax.set_title(title[prop-1])
 ax3.set_title('Orthopyroxene')
@@ -204,14 +198,35 @@ f.close()
 
 #size=np.divide(Ol*10,max(Ol))
 #ax4 = plt.subplot(324)
-ax4 = fig.add_subplot(324)
-sc = ax4.scatter(d[:,0], d[:,1], c=d[:,2], vmin=min(d[:,2]), vmax=max(d[:,2]), s=size, cmap=cm,marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
+ax4 = fig.add_subplot(424)
+sc = ax4.scatter(d[:,0], d[:,1], c=d[:,2],vmin=min(d[:,2]), vmax=max(d[:,2]), s=size, cmap='Spectral',marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
 cbar=plt.colorbar(sc)
 cbar.ax.set_title(title[prop-1])
 ax4.set_title('Clinopyroxene')
 ax4.set_xlabel('Distance (km)')
 ax4.set_ylabel('Depth (km)')
 ax4.invert_yaxis()
+
+##################3
+### pyroxene
+d=[]
+d= find_mineral('C2c',mat_list,prop)
+#d.sort(axis=-2)
+d[np.lexsort(np.fliplr(d).T)]
+f=open("pyroxene.dat","w")
+for i in range(len(d)):
+	f.writelines(" %f  %f  %f  \n " % (d[i,0],d[i,1],d[i,2]))
+f.close()
+#size=np.divide(Ol*10,max(Ol))
+#ax5 = plt.subplot(325)
+ax5 = fig.add_subplot(425)
+sc = ax5.scatter(d[:,0], d[:,1], c=d[:,2],vmin=min(d[:,2]), vmax=max(d[:,2]), s=size, cmap='Spectral',marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
+cbar=plt.colorbar(sc)
+cbar.ax.set_title(title[prop-1])
+ax5.set_title('Pyroxene')
+ax5.set_xlabel('Distance (km)')
+ax5.set_ylabel('Depth (km)')
+ax5.invert_yaxis()
 
 
 
@@ -225,14 +240,14 @@ for i in range(len(d)):
 f.close()
 #size=np.divide(Ol*10,max(Ol))
 #ax5 = plt.subplot(325)
-ax5 = fig.add_subplot(325)
-sc = ax5.scatter(d[:,0], d[:,1], c=d[:,2], vmin=min(d[:,2]), vmax=max(d[:,2]), s=size, cmap=cm,marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
+ax6 = fig.add_subplot(426)
+sc = ax6.scatter(d[:,0], d[:,1], c=d[:,2],vmin=min(d[:,2]), vmax=max(d[:,2]), s=size, cmap='Spectral',marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
 cbar=plt.colorbar(sc)
 cbar.ax.set_title(title[prop-1])
-ax5.set_title('Plagioclase')
-ax5.set_xlabel('Distance (km)')
-ax5.set_ylabel('Depth (km)')
-ax5.invert_yaxis()
+ax6.set_title('Plagioclase')
+ax6.set_xlabel('Distance (km)')
+ax6.set_ylabel('Depth (km)')
+ax6.invert_yaxis()
 
 
 d=[]
@@ -246,14 +261,29 @@ f.close()
 
 #size=np.divide(Ol*10,max(Ol))
 #ax6 = plt.subplot(326)
-ax6 = fig.add_subplot(326)
-sc = ax6.scatter(d[:,0], d[:,1], c=d[:,2], vmin=min(d[:,2]), vmax=max(d[:,2]), s=size, cmap=cm,marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
+ax7 = fig.add_subplot(427)
+sc = ax7.scatter(d[:,0], d[:,1], c=d[:,2],vmin=min(d[:,2]), vmax=max(d[:,2]), s=size, cmap='Spectral',marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
 cbar=plt.colorbar(sc)
 cbar.ax.set_title(title[prop-1])
-ax6.set_title('Spinel')
-ax6.set_xlabel('Distance (km)')
-ax6.set_ylabel('Depth (km)')
-ax6.invert_yaxis()
+ax7.set_title('Spinel')
+ax7.set_xlabel('Distance (km)')
+ax7.set_ylabel('Depth (km)')
+ax7.invert_yaxis()
+
+'''
+post_data=np.loadtxt('post_processing_output_crust.dat',usecols=(0,1,4,5))
+vp_vs=np.divide(post_data[:,2],post_data[:,3],out=np.zeros_like(post_data[:,2]), where=post_data[:,3]!=0)
+ax8 = fig.add_subplot(428)
+sc = ax8.scatter(post_data[:,0], -post_data[:,1], c=vp_vs[:], vmin=min(vp_vs[:]), vmax=max(vp_vs[:]), s=size, cmap='Spectral',marker=symbol,edgecolors=symbol_edge_color,linewidth=symbol_edge_line)
+cbar=plt.colorbar(sc)
+cbar.ax.set_title('Vp/Vs')
+ax8.set_title('Vp/Vs')
+ax8.set_xlabel('Distance (km)')
+ax8.set_ylabel('Depth (km)')
+ax8.invert_yaxis()
+'''
+
+
 #plt.tight_layout(pad=0.2, w_pad=0.2)
 plt.tight_layout(pad=1.2, w_pad=1.2, h_pad=2.0)
 s=(str(cwd+ '/' + str(title_save[prop-1]) + '_plot.jpg'))

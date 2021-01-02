@@ -1,0 +1,69 @@
+--------------------------------------------------------------------
+There are two model files that contain the coefficients that
+define the Global Dispersion Model GDM52 as described in the
+GDM52 paper
+Ekstrom, G., A global model of Love and Rayleigh 
+surface-wave dispersion and anisotropy, 25-250 s,
+Geophy. J. Int., doi:10.1111/j.1365-246X.2011.05225.x
+
+RAYL_320_80_32000_8000.disp
+LOVE_400_100.disp
+
+These two files can be used to calculate dispersion at a
+point or along a path using the FORTRAN program
+
+GDM52_dispersion.f
+
+When compiled and run, the program opens the two model files and 
+then presents different options in the terminal window:
+- calculate dispersion at a point
+- calculate dispersion between two points
+- calculate frequency-dependent azimuthal anisotropy at a point
+
+The user selects an option and location(s) and the program
+generates a table with output values at 100 frequencies
+between 4 and 40 mHz (250 to 25 sec).
+
+The output file is called GDM52_dispersion.out, and it is
+overwritten whenever GDM52_dispersion is run. 
+Within one session, the results are appended in the
+same output file.
+
+--------------------------------------------------------------------
+Compilation:
+
+The program is written in standard FORTRAN with extended source 
+lines. Under Solaris and Linux, using Sun/Oracle compilers,
+it compiles with
+f77 -e GDM52_dispersion.f -o GDM52_dispersion
+or
+f95 -e GDM52_dispersion.f -o GDM52_dispersion
+
+Using the GNU compilers, it compiles with 
+gfortran -ffixed-line-length-132 -o GDM52_dispersion
+or
+g77 -ffixed-line-length-132 -o GDM52_dispersion
+
+A sample script is included, compile.s
+
+--------------------------------------------------------------------
+Test scripts and sample output:
+
+There are three sample scripts that can be used to test
+that the output is correct.
+sample1.s calculates Love wave dispersion at a point (Fig. 17)
+sample2.s calculates Rayleigh wave dispersion for a path (Fig. 19)
+sample3.s calculates azimuthal anisotropy at a point (Fig. 18)
+
+The script sample1.s should generate an output file 
+GDM52_dispersion.out that looks like the provided file
+GDM52_dispersion_sample1.out
+Analogously for the scripts sample2.s and sample3.s
+
+--------------------------------------------------------------------
+Problems with the programs or skeptical about the model output?
+There could be bugs!
+Please contact me at ekstrom@ldeo.columbia.edu
+--------------------------------------------------------------------
+GE 2011-10-26
+--------------------------------------------------------------------

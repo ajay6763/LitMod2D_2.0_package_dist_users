@@ -8,9 +8,8 @@
 ##### this script to work.                                      #####
 ##### It produces RF and dispersion curves at each distance     #####
 ##### point along the profile.					#####
-##### Option for Love or Rayleigh Phase or Group velocities are ##### 
-##### provided.							#####
-##### Minimum and Maximum period is 25 s  to 250 s              ##### 
+
+
 #####################################################################
 #################	Tasks	    @ajay	#####################
 #####################################################################
@@ -30,8 +29,8 @@ fi
 
 
 cp *_vel.dat ./Surface_Wave_Dispersion_Curves
-cd ././Surface_Wave_Dispersion_Curves
-$LitModHOME/Post_processing/Surface_wave_dispersion/calc_dispersion.sh
+cd ./Surface_Wave_Dispersion_Curves
+${LitModHOME}/Post_processing/Surface_wave_dispersion/calc_dispersion.sh
 cd ./../
 
 
@@ -46,7 +45,7 @@ fi
 
 cp *_vel.dat ./Receiver_Functions
 cd ./Receiver_Functions
-$LitModHOME/Post_processing/RF/Synthetic_RF/syn_P_RF.sh
+${LitModHOME}/Post_processing/RF/Synthetic_RF/syn_P_RF.sh
 for file in *.eqr
 do
 sac2xy $file $file.xyz
