@@ -9,7 +9,7 @@ pandas==0.23.4
 Pillow==5.1.0
 pluggy==0.8.0
 properties==0.4.0
-py==1.7.0
+py==1.10.0
 pyface==4.5.0
 Pygments==2.2.0
 pyparsing==2.4.6
