@@ -1,0 +1,172 @@
+#!/bin/zsh
+
+#####################################################################
+#################	March 2021 @wzhang	#####################
+#####################################################################
+##### 	This script works for upto 6th version of GMT		#####
+#####################################################################
+#####   Plot results from Litmod:				#####
+#####  	1- P-wave velocities				#####
+#####		2- S-wave velocities  				#####
+#####		3- Their anomalies from a reference column	#####
+#####################################################################
+
+
+Format=png
+############ Input model files
+ModelDir=~/ownCloud/LitMod/20201202/Model_Final_V1.0
+#ModelDir=~/ownCloud/LitMod/20201202/2021-03-24_13:19:36_Model_Final_V2.0
+fileBodies=$ModelDir/bodies.out
+fileVLitMod=$ModelDir/velocities.dat
+file_topo=$ModelDir/0Topo.dat
+
+echo 'Enter path to the model:' $ModelDir
+
+### Figure setting
+wc $fileVLitMod | read numrow a b c
+awk '{if(NR==numrow) {print $1} }' numrow=$numrow $fileVLitMod | read Xmax
+
+#Set profile extension and scales
+left=0			### horizontal inicial point (km)
+right=$Xmax		### horizontal last point (km)
+Dx=5			### horizontal discrititzation (km)
+Igrdsample=1
+width=16.6
+scale1=s$width/3		#2.7	## 	Surface heat flow, Gravity, Geoid, Elevation
+scale1_topo=s$width/1.5		##	Elevation for TemDen picture
+#Jtopo=-JX14/1.7
+#Jgraf=-JX20/-3.7
+Xscale=0.014		#0.014
+Jtopo=-Js$width/1.5
+Jgraf=-Jx$Xscale/-$Xscale
+
+XYRegion=-R$left/$right/0/400
+XYRegionVs=-R$left/$right/0/400		## 250
+
+awk '{if($1==">") {print ">"} else {print $1,-$2 }}' $fileBodies > filebodies.tmp	## bodies
+#########	Reference column to calculate the anomalies	############
+echo "Choose your option for the reference column:"
+echo "	1- Use the LitMod2D_Ref_Model (Kumar et al., 2020 G3)"
+echo "	2- Use a column from the model as a reference"
+read OptRefCol
+if [ $OptRefCol -eq 1 ]
+then
+   #RefVp=ak135VP
+   #RefVs=ak135VS					Vs
+   RefModel=~/ownCloud/LitMod/LitMod2D_2.0_package_dist_users/Post_processing/Synthetic_Seismic_tomography/LitMod2D_Ref_Model_for_Syn_tomo.dat
+   cat $RefModel|awk '{print $1,$3}'>t_P.tmp
+   RefVp=t_P.tmp
+   cat $RefModel|awk '{print $1,$4}'>t_S.tmp
+   RefVs=t_S.tmp
+   echo "Reading the reference column from the files: ", $RefVp, $RefVs
+   echo " Intro = OK "
+   #read readok
+   cp $RefVp fileRefModelVp_xz.tmp
+   cp $RefVs fileRefModelVs_xz.tmp
+   psfile=Litmod_Vanomalies_GMT6_LitMod_ref
+   
+else
+   echo "Choose your x position of your reference column in km"
+   echo "Enter location of reference: "
+   read XRef_column #  XRef_column=375				## x position of the reference column = XRef_column  km
+   echo "Reading the reference column from the x position: ", $XRef_column " km"
+   echo " Intro = OK "
+   read readok
+   awk '{if($3==0) {print $1, $2, "NaN"} else {print $1,$2,$3} }' $fileVLitMod > file_vel2.tmp	## Vp 
+   awk '{if($1=='$XRef_column'){print -$2,$3}}' file_vel2.tmp > fileRefModelVp_xz.tmp 		## Z depth, P-wave  ->  Vp at the reference column
+   awk '{if($4==0) {print $1, $2, "NaN"} else {print $1,$2,$4} }' $fileVLitMod > file_vel4.tmp	## Vs
+   awk '{if($1=='$XRef_column'){print -$2,$3}}' file_vel4.tmp > fileRefModelVs_xz.tmp 		## Z depth, S-wave  ->  Vs at the reference column	
+   #cp fileRefModelVp_xz.tmp ColumnRefModelVp.dat
+   #cp fileRefModelVs_xz.tmp ColumnRefModelVs.dat
+   psfile=Litmod_Vanomalies_GMT6_Column$XRef_column 
+fi
+
+# mv $psfile $psfile_bkp
+
+###### cross-section (x,z) with the Vp from the reference column   #########
+for ((xpos=$left; xpos<=$Xmax; xpos=xpos+$Dx))
+do
+awk '{printf ("%i %f %f \n","'$xpos'",$1,$2) }' fileRefModelVp_xz.tmp >> fileRefModelVp_xyz.tmp  # X, Z, P-wave from the reference column
+done
+
+###### cross-section (x,z) with the Vs from the reference column   #########
+for ((xpos=$left; xpos<=$Xmax; xpos=xpos+$Dx))
+do
+awk '{printf ("%i %f %f \n","'$xpos'",$1,$2) }' fileRefModelVs_xz.tmp >> fileRefModelVs_xyz.tmp  # X, Z, S-wave from the reference column
+done
+
+
+############ Figure
+gmt begin $psfile $Format
+gmt set MAP_FRAME_TYPE plain
+gmt set FONT 12p,3
+gmt set MAP_GRID_PEN faint
+gmt set MAP_TICK_PEN 1p
+gmt set FORMAT_GEO_MAP=dddF
+gmt set COLOR_BACKGROUND blue
+gmt set COLOR_FOREGROUND red
+#gmt set PS_MEDIA A3
+
+  gmt subplot begin 5x1 -Fs15/1.5 -M0.2c/1.7c -Y1.8c
+  ###### Elevation Profile
+    gmt subplot set 0     # Elevation
+	echo "   -----  Elevation"
+	gmt plot $file_topo -W1p,red -R$left/$right/-1000/1500 -BWsNE -Bxaf+l" " -By1000f500+l"Elevation (m)"
+    	gmt plot -W0.5p,black << EOF
+0 0
+10000 0
+EOF
+    gmt subplot set 4     # P-wave velocity, Vp, resulting from LitMod
+	echo "   -----  P-wave velocities, Vp, resulting from LitMod"
+	awk '{if($3==0) {print $1, -$2, "NaN"} else {print $1,-$2,$3}}' $fileVLitMod | gmt nearneighbor $XYRegion -I$Dx -Gfile_VLitMod_grd.tmp -S10 -N4
+	#grd2cpt file_VLitMod_grd.tmp -Chaxby -I -D -S7.6/8.9/0.01 -L7.6/9 -Z -V >  file_cpt.tmp
+	gmt makecpt -Chaxby -I -T7.6/9/0.01 -D
+	gmt grdimage file_VLitMod_grd.tmp $Jgraf -C $XYRegion -Bxaf+l" " -Bya+l"Depth (km)" -BWesn
+	gmt colorbar -C -Dx15.7/2.5/4.5/0.3 -Bx0.2f0.1+l"Velocity Vp (km/s)" $Jgraf
+	gmt plot filebodies.tmp $XYRegion $Jgraf -W0.5
+	gmt grdcontour file_VLitMod_grd.tmp -C0.05 -A0.1+f8,black+gwhite -L7/8.8 -S10 -Gd5c -W0.2,white $XYRegion $Jgraf
+    gmt subplot set 1     # P-wave anomalies  =  Vp from Litmod - Vp from a reference model 
+	echo "   -----  P-wave anomalies, dVp"
+	gmt grdsample file_VLitMod_grd.tmp -I$Igrdsample -Gfile_Vp_sample.tmp					### Vp resulting from LitMod
+	gmt nearneighbor fileRefModelVp_xyz.tmp $XYRegion -I$Dx/10 -Gfile_vp_refModel_grd.tmp -S20 -N4	### Vp from a reference model	
+	gmt grdsample file_vp_refModel_grd.tmp -I$Igrdsample -Gfile_Vp_ref.tmp
+	gmt grdmath file_Vp_sample.tmp file_Vp_ref.tmp SUB = file_grdtmp.tmp				###  Difference
+	gmt grdmath file_grdtmp.tmp file_Vp_ref.tmp DIV 100 MUL = file_Panomaly.tmp				###  %
+    	
+    	gmt makecpt -Cpolar -I -D -T-3./3./0.1 -D
+	gmt grdimage file_Panomaly.tmp $Jgraf -C $XYRegion -Bxaf+l" " -Bya+l"Depth (km)" -BWesn
+	gmt colorbar -C -Dx15.7/2.5/4.5/0.3 -Bx1f0.5+l"Vp anomaly %" $Jgraf
+	gmt plot filebodies.tmp $XYRegion $Jgraf -W0.5
+	gmt grdcontour file_Panomaly.tmp -C1 -A1+f8,black+gwhite -L-2/2 -S10 -Gd8c -W0.2,white $XYRegion $Jgraf 
+
+    gmt subplot set 4     # S-wave velocity, Vs, resulting from LitMod
+	echo "   -----  S-wave velocities, Vs, resulting from LitMod"
+	awk '{if($3==0) {print $1, -$2, "NaN"} else {print $1,-$2,$4}}' $fileVLitMod | gmt nearneighbor $XYRegion -I$Dx -Gfile_VLitMod_grd.tmp -S10 -N4
+	#grd2cpt file_VLitMod_grd.tmp -Chaxby -I -D -S7.6/8.9/0.01 -L7.6/9 -Z -V >  file_cpt.tmp
+	gmt makecpt -Chaxby -I -T4.25/4.75/0.01 -D
+	gmt grdimage file_VLitMod_grd.tmp $Jgraf -C $XYRegion -Bxaf+l" " -Bya+l"Depth (km)" -BWesn
+	gmt colorbar -C -Dx15.7/2.5/4.5/0.3 -Bx0.05f0.025+l"Velocity Vs (km/s)" $Jgraf
+	gmt plot filebodies.tmp $XYRegion $Jgraf -W0.5
+	gmt grdcontour file_VLitMod_grd.tmp -C0.025 -A0.05+f8,black+gwhite -L4.25/4.75 -S10 -Gd5c -W0.2,white $XYRegion $Jgraf
+
+    gmt subplot set 2     # S-wave anomalies  =  Vs from Litmod - Vs from a reference model 
+	echo "   -----  S-wave anomalies, dVs"
+	gmt grdsample file_VLitMod_grd.tmp -I$Igrdsample -Gfile_Vs_sample.tmp					### Vs resulting from LitMod
+	gmt nearneighbor fileRefModelVs_xyz.tmp $XYRegion -I$Dx/10 -Gfile_vs_refModel_grd.tmp -S20 -N4	### Vs from a reference model	
+	gmt grdsample file_vs_refModel_grd.tmp -I$Igrdsample -Gfile_Vs_ref.tmp
+	gmt grdmath file_Vs_sample.tmp file_Vs_ref.tmp SUB = file_grdtmp.tmp				###  Difference
+	gmt grdmath file_grdtmp.tmp file_Vs_ref.tmp DIV 100 MUL = file_Panomaly.tmp				###  %
+    	
+    	gmt makecpt -Cpolar -I -D -T-3./3./0.1 -D
+	gmt grdimage file_Panomaly.tmp $Jgraf -C $XYRegion -Bxaf+l"Distance (km)" -Bya+l"Depth (km)" -BWeSn
+	gmt colorbar -C -Dx15.7/2.5/4.5/0.3 -Bx1f0.5+l"Vs anomaly %" $Jgraf
+	gmt plot filebodies.tmp $XYRegion $Jgraf -W0.5
+	gmt grdcontour file_Panomaly.tmp -C1 -A1+f8,black+gwhite -L-2/2 -S10 -Gd8c -W0.2,white $XYRegion $Jgraf 
+  gmt subplot end
+
+gmt end show
+
+rm *.tmp
+
+
+
