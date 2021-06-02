@@ -29,6 +29,6 @@ steno3d==0.3.9
 subprocess32==3.5.4
 traits==4.5.0
 traitsui==4.5.1
-urllib3==1.25.8
+urllib3==1.26.5
 vectormath==0.2.2
 vtk==8.1.2
