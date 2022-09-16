@@ -31,4 +31,4 @@ traits==4.5.0
 traitsui==4.5.1
 urllib3==1.25.8
 vectormath==0.2.2
-vtk==8.1.2
+vtk==9.0.1
