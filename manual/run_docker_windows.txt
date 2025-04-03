@@ -1,0 +1,3 @@
+set-variable -name DISPLAY XXXXXXX
+
+docker run -ti --rm   -v C:/Users/kumar/work/litmod_docker:/home/work -e DISPLAY=$DISPLAY d97d8869dfee
