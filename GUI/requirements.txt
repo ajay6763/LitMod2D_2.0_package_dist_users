@@ -18,7 +18,7 @@ PySide==1.2.4
 python-dateutil==2.7.5
 python-openid==2.2.5
 pytz==2018.7
-pyxdg==0.25
+pyxdg==0.26
 requests==2.23.0
 scipy==1.1.0
 scour==0.36
